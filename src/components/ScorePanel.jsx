@@ -1,11 +1,30 @@
 import './ScorePanel.css';
+import { useEffect, useState } from 'react';
 
 export default function ScorePanel() {
-  const capturedToday = 5.2;      // kg
+  const [animatedToday, setAnimatedToday] = useState(0);
+  const capturedToday = 5.2;      // kg (target)
   const totalCaptured = 2100;     // kg (2.1 tons)
   const snowmanLevel = 3;         // Gamification XP
   const tripsOffset = 42;         // Equivalent trips
   const airPurified = 380000;     // Liters of air
+
+  // Animate the CO₂ Today value like a digital gauge
+  useEffect(() => {
+    let current = 0;
+    const step = capturedToday / 30;
+    const interval = setInterval(() => {
+      current += step;
+      if (current >= capturedToday) {
+        setAnimatedToday(capturedToday.toFixed(1));
+        clearInterval(interval);
+      } else {
+        setAnimatedToday(current.toFixed(1));
+      }
+    }, 30);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="score-panel">
@@ -14,7 +33,7 @@ export default function ScorePanel() {
       <div className="dash-row">
         <div className="dash-item">
           <span className="dash-label">Today</span>
-          <span className="dash-value">{capturedToday} kg</span>
+          <span className="dash-value">{animatedToday} kg</span>
           <span className="dash-desc">CO₂ Captured</span>
         </div>
         <div className="dash-item">

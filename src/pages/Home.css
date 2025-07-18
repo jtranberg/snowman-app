@@ -1,0 +1,75 @@
+.home-container {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  color: #facc15;
+  margin-bottom: 0.5rem;
+}
+
+.hero-subtext {
+  font-size: 1.1rem;
+  color: #cbd5e1;
+  margin-bottom: 2rem;
+}
+
+.mini-stats {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 1rem;
+  min-width: 140px;
+  box-shadow: inset 0 0 8px rgba(255,255,255,0.1);
+}
+
+.label {
+  display: block;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.value {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #38bdf8;
+}
+
+.alert {
+  color: #f97316;
+}
+
+.home-buttons button {
+  margin: 0.5rem;
+}
+
+.quote {
+  margin-top: 3rem;
+  font-style: italic;
+  color: #94a3b8;
+}
+
+
+/* Add this to index.css or Home.css */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: url('https://www.transparenttextures.com/patterns/snow.png'); /* or use particles.js later */
+  opacity: 0.05;
+  z-index: -1;
+  animation: drift 60s linear infinite;
+}
+
+@keyframes drift {
+  from { background-position: 0 0; }
+  to { background-position: 0 1000px; }
+}

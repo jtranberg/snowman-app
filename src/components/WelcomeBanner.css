@@ -1,0 +1,15 @@
+.welcome-banner {
+  background: linear-gradient(90deg, #22d3ee, #38bdf8);
+  color: #0f172a;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+  animation: glow 2s ease-in-out infinite alternate;
+  text-align: center;
+}
+
+@keyframes glow {
+  from { box-shadow: 0 0 10px #38bdf8; }
+  to { box-shadow: 0 0 20px #7dd3fc; }
+}
