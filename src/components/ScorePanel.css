@@ -1,0 +1,50 @@
+.score-panel {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  box-shadow: 0 0 12px rgba(0,0,0,0.3);
+  text-align: center;
+}
+
+.score-panel h3 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: #facc15;
+}
+
+.dash-row {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+}
+
+.dash-item {
+  flex: 1 1 160px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  margin: 0.5rem;
+  padding: 1rem;
+  box-shadow: inset 0 0 4px rgba(255, 255, 255, 0.1);
+}
+
+.dash-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dash-value {
+  font-size: 1.6rem;
+  font-weight: bold;
+  color: #38bdf8;
+}
+
+.dash-desc {
+  font-size: 0.9rem;
+  color: #cbd5e1;
+}
