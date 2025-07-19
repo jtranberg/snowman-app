@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
-import './Home.css';
+import { Link } from "react-router-dom";
+import "./Home.css";
 
 export default function Home() {
   return (
@@ -8,7 +8,10 @@ export default function Home() {
         <img src="/logo.png" alt="Project Snowman Logo" />
       </div>
       <h1 className="hero-title">You Drive. Snowman Captures.</h1>
-      <p className="hero-subtext">Your CO₂ companion on every trip — cleaning the air, one kilometer at a time.</p>
+      <p className="hero-subtext">
+        Your CO₂ companion on every trip — cleaning the air, one kilometer at a
+        time.
+      </p>
 
       <div className="mini-stats">
         <div className="stat-card">
@@ -26,12 +29,20 @@ export default function Home() {
       </div>
 
       <div className="home-buttons">
-        <Link to="/dashboard"><button>📊 View Dashboard</button></Link>
-        <Link to="/learn"><button>📘 Learn More</button></Link>
-        <Link to="/score"><button>🏅 My Score</button></Link>
+        <Link to="/dashboard">
+          <button>📊 View Dashboard</button>
+        </Link>
+        <Link to="/learn">
+          <button>📘 Learn More</button>
+        </Link>
+        <Link to="/score">
+          <button>🏅 My Score</button>
+        </Link>
       </div>
 
-      <p className="quote">“The air you breathe is cleaner because you showed up.”</p>
+      <p className="quote">
+        “The air you breathe is cleaner because you showed up.”
+      </p>
     </div>
   );
 }
