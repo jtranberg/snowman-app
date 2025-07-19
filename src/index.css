@@ -6,6 +6,9 @@ body {
   background: linear-gradient(to bottom, #0f172a, #1e293b);
   color: #e2e8f0;
 }
+h2{
+  margin-left: 25px;
+}
 
 a {
   text-decoration: none;
