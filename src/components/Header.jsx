@@ -7,10 +7,11 @@ export default function Header() {
         <img src="/logo.png" alt="Project Snowman Logo" className="logo" />
       </div>
       <nav className="nav-links">
-        <a href="/">Home</a>
-        <a href="/dashboard">Dashboard</a>
-        <a href="/about">About</a>
-        <a href="/contact">Contact</a>
+        <a href="/">🏠 Home</a>
+        <a href="/dashboard">📊 Dashboard</a>
+        <a href="/about">❄️ About</a>
+        <a href="/contact">📬 Contact</a>
+        <a href="/score">🏅 My Score</a>
       </nav>
     </header>
   );

@@ -1,0 +1,38 @@
+.about-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: rgba(255,255,255,0.02);
+  border-radius: 12px;
+  color: #e2e8f0;
+}
+
+.about-container h1 {
+  font-size: 2rem;
+  color: #facc15;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.mission {
+  font-style: italic;
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.about-sections section {
+  margin-bottom: 2rem;
+}
+
+.about-sections h2 {
+  color: #38bdf8;
+  margin-bottom: 0.5rem;
+}
+
+.about-footer {
+  text-align: center;
+  margin-top: 3rem;
+  color: #94a3b8;
+  font-size: 0.9rem;
+}

@@ -1,6 +1,7 @@
 .home-container {
   text-align: center;
   padding: 3rem 1rem;
+    position: relative;
 }
 
 .hero-title {
@@ -72,4 +73,18 @@ body::before {
 @keyframes drift {
   from { background-position: 0 0; }
   to { background-position: 0 1000px; }
+}
+
+
+.home-logo {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+}
+
+.home-logo img {
+  position: fixed;
+  height: 150px;
+  width: auto;
+  border-radius: 9px;
 }

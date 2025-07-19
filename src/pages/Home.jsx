@@ -4,6 +4,9 @@ import './Home.css';
 export default function Home() {
   return (
     <div className="home-container">
+      <div className="home-logo">
+        <img src="/logo.png" alt="Project Snowman Logo" />
+      </div>
       <h1 className="hero-title">You Drive. Snowman Captures.</h1>
       <p className="hero-subtext">Your CO₂ companion on every trip — cleaning the air, one kilometer at a time.</p>
 

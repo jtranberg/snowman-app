@@ -16,8 +16,9 @@
 }
 
 .logo {
-  height: 48px;
+  height: 50px;
   width: auto;
+   border-radius: 9px;
 }
 
 .nav-links {
