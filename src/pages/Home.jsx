@@ -42,7 +42,7 @@ export default function Home() {
         </div>
         <div className={`stat-card ${fadeIn ? 'fade-in' : ''}`}>
           <span className="label">Maintenance</span>
-          <span className="value alert">Filter: 12 days</span>
+          <span className="value alert">xxxxx: In 12 days</span>
         </div>
       </div>
 
