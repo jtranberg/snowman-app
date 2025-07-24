@@ -36,7 +36,7 @@ export default function Contact() {
         <div className="contact-footer">
           <p>
             Or reach out directly:{" "}
-            <a href="mailto:snowman@projectcool.com">snowman@projectcool.com</a>
+            <a href="mailto:devjaytranberg@gmail.com">devjaytranberg@gmail.com</a>
           </p>
         </div>
       </div>

@@ -29,7 +29,7 @@ export default function MyScore() {
             <strong>Liters of Air Purified:</strong> 380,000 L
           </p>
           <p>
-            <strong>Filter Status:</strong> 🔶 12 days until change
+            <strong>xxxxx Status:</strong> 🔶 12 days until change
           </p>
         </div>
         <button className="save-btn" onClick={() => window.print()}>

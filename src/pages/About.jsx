@@ -16,7 +16,7 @@ export default function About() {
             <h2>🧠 Mission</h2>
             <p>
               Our goal is to empower individuals to offset emissions in
-              real-time by using smart, vehicle-mounted carbon-capture devices.
+              real-time by using smart, (insert secret  here.).
               It's gamified. It's measurable. It's the future.
             </p>
           </section>
@@ -24,10 +24,13 @@ export default function About() {
           <section>
             <h2>🧪 Technology</h2>
             <p>
-              Project Snowman uses a proprietary combination of cryo-filters,
-              catalytic converters, electrochemical reduction, and earth mineral
-              compression to capture and neutralize carbon — even converting it
-              into crystalline forms.
+              This part is secret...<br></br>
+
+              Project Snowman uses a proprietary combination of 
+              xxxxx xxxxx xxxxxxxxxx
+              xxxxxx xxxxxxx xxxxxxxx xxx
+              xxxxxx xxxxxx xxxxxxx  neutralize carbon — even converting it
+              into xxxx forms.
             </p>
           </section>
 
