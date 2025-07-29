@@ -15,9 +15,11 @@ export default function LatestSensorReading() {
       <h2>📊 Latest Sensor Reading</h2>
       {reading ? (
         <ul>
-          <li><strong>xxx:</strong> {reading.intake}°C</li>
-          <li><strong>Prexxx:</strong> {reading.pre_cryo}°C</li>
-          <li><strong>Postxxx:</strong> {reading.post_cryo}°C</li>
+          <li><strong>Alpha:</strong> {reading.alpha}°C</li>
+          <li><strong>Bravo:</strong> {reading.bravo}°C</li>
+          <li><strong>Charlie:</strong> {reading.charlie}°C</li>
+          <li><strong>Delta:</strong> {reading.delta}°C</li>
+          <li><strong>Echo:</strong> {reading.echo}°C</li>
           <li><strong>Timestamp:</strong> {new Date(reading.timestamp).toLocaleString()}</li>
         </ul>
       ) : (
