@@ -5,16 +5,21 @@ const router = express.Router();
 
 // ✅ POST /api/data
 router.post('/', async (req, res) => {
-  const { intake, pre_cryo, post_cryo } = req.body;
+  console.log("🧪 Incoming req.body:", req.body); // ← ADD THIS LINE
+
+  const { alpha, bravo, charlie, delta, echo } = req.body;
 
   try {
-    const reading = new SensorReading({ intake, pre_cryo, post_cryo });
+    const reading = new SensorReading({ alpha, bravo, charlie, delta, echo });
     await reading.save();
     res.status(201).json({ success: true });
-  } catch {
+  } catch (err) {
+    console.error("❌ Save error:", err);
     res.status(500).json({ error: 'Failed to save reading' });
   }
 });
+
+
 
 // ✅ GET /api/data/latest
 router.get('/latest', async (req, res) => {
