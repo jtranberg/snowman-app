@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import './LatestSensorReading.css';
 
 export default function LatestSensorReading() {
   const [reading, setReading] = useState(null);
@@ -11,17 +12,21 @@ export default function LatestSensorReading() {
   }, []);
 
   return (
-    <div className="sensor-card">
+    <div className="simulation-panel">
       <h2>📊 Latest Sensor Reading</h2>
       {reading ? (
-        <ul>
-          <li><strong>Alpha:</strong> {reading.alpha}°C</li>
-          <li><strong>Bravo:</strong> {reading.bravo}°C</li>
-          <li><strong>Charlie:</strong> {reading.charlie}°C</li>
-          <li><strong>Delta:</strong> {reading.delta}°C</li>
-          <li><strong>Echo:</strong> {reading.echo}°C</li>
-          <li><strong>Timestamp:</strong> {new Date(reading.timestamp).toLocaleString()}</li>
-        </ul>
+        <div className="cards-container">
+          {["alpha", "bravo", "charlie", "delta", "echo"].map((sensor) => (
+            <div key={sensor} className="sensor-card">
+              <h3>{sensor.charAt(0).toUpperCase() + sensor.slice(1)}</h3>
+              <p>{reading[sensor]}°C</p>
+            </div>
+          ))}
+          <div className="sensor-card timestamp-card">
+            <h3>Timestamp</h3>
+            <p>{new Date(reading.timestamp).toLocaleString()}</p>
+          </div>
+        </div>
       ) : (
         <p>Loading...</p>
       )}

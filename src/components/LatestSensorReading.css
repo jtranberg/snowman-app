@@ -1,0 +1,44 @@
+.simulation-panel {
+  background-color: #0f172a;
+  border-radius: 12px;
+  padding: 1.5rem;
+  color: #f8fafc;
+  box-shadow: 0 0 10px #334155;
+  margin-top: 1rem;
+}
+
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.sensor-card {
+  background-color: #1e293b;
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  flex: 1 1 120px;
+  min-width: 120px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+.sensor-card h3 {
+  margin: 0 0 0.5rem 0;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #38bdf8;
+}
+
+.sensor-card p {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.timestamp-card {
+  flex-basis: 100%;
+  background-color: #334155;
+  color: #94a3b8;
+}
