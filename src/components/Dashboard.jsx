@@ -2,6 +2,7 @@ import ScorePanel from './ScorePanel';
 import MaintenancePanel from './MaintenancePanel';
 import WelcomeBanner from '../components/WelcomeBanner';
 import SimulationPanel from './SimulationPanel';
+import LatestSensorReading from '../components/LatestSensorReading'; 
 
 const mockSimulationData = {
   ambient_temp: 25,
@@ -20,8 +21,10 @@ export default function Dashboard() {
     <div className='container'>
       <WelcomeBanner name="Jay" level={3} />
       <ScorePanel />
+      <LatestSensorReading /> 
       <MaintenancePanel />
       <SimulationPanel data={mockSimulationData} />
+      
     </div>
   );
 }

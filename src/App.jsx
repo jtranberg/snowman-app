@@ -7,6 +7,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import MyScore from './pages/MyScore';
 
+
 export default function App() {
   return (
     <Router>

@@ -1,8 +1,9 @@
 import express from 'express';
 import SensorReading from '../models/SensorReading.js';
+
 const router = express.Router();
 
-// POST /api/data - receives sensor readings
+// ✅ POST /api/data
 router.post('/', async (req, res) => {
   const { intake, pre_cryo, post_cryo } = req.body;
 
@@ -15,10 +16,13 @@ router.post('/', async (req, res) => {
   }
 });
 
-// GET /api/data/latest - latest reading
+// ✅ GET /api/data/latest
 router.get('/latest', async (req, res) => {
   try {
     const latest = await SensorReading.findOne().sort({ timestamp: -1 });
+    if (!latest) {
+      return res.status(404).json({ error: 'No sensor data found' });
+    }
     res.json(latest);
   } catch {
     res.status(500).json({ error: 'Failed to fetch latest reading' });
