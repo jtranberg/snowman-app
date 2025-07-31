@@ -1,19 +1,27 @@
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import './LatestSensorReading.css';
 
 export default function LatestSensorReading() {
   const [reading, setReading] = useState(null);
 
-  const fetchData = () => {
-    fetch("https://snowman-app.onrender.com/api/data/latest")
-      .then((res) => res.json())
-      .then((data) => setReading(data))
-      .catch((err) => console.error("Failed to fetch sensor data:", err));
-  };
+  const fetchData = async () => {
+    try {
+      // Step 1: Tell ESP32 to send a new reading
+      await fetch("https://snowman-app.onrender.com/api/data/request-data", {
+        method: "POST",
+      });
 
-  useEffect(() => {
-    fetchData(); // initial load
-  }, []);
+      // Step 2: Wait for ESP32 to respond
+      await new Promise(resolve => setTimeout(resolve, 1200));
+
+      // Step 3: Fetch the latest reading
+      const res = await fetch("https://snowman-app.onrender.com/api/data/latest");
+      const data = await res.json();
+      setReading(data);
+    } catch (err) {
+      console.error("Failed to fetch or request sensor data:", err);
+    }
+  };
 
   return (
     <div className="simulation-panel">
