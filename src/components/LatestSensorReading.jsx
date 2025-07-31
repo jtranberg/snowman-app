@@ -1,32 +1,44 @@
-import {  useState } from "react";
+import { useState } from "react";
 import './LatestSensorReading.css';
 
 export default function LatestSensorReading() {
   const [reading, setReading] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
     try {
-      // Step 1: Tell ESP32 to send a new reading
-      await fetch("https://snowman-app.onrender.com/api/data/request-data", {
+      setLoading(true);
+
+      // ✅ Step 1: Tell ESP32 to send data
+      const triggerRes = await fetch("https://snowman-app.onrender.com/api/data/request-data", {
         method: "POST",
       });
 
-      // Step 2: Wait for ESP32 to respond
+      if (!triggerRes.ok) {
+        throw new Error("Failed to trigger ESP32 reading.");
+      }
+
+      // ✅ Step 2: Wait 1200ms to give ESP32 time to respond
       await new Promise(resolve => setTimeout(resolve, 1200));
 
-      // Step 3: Fetch the latest reading
+      // ✅ Step 3: Fetch the new latest reading
       const res = await fetch("https://snowman-app.onrender.com/api/data/latest");
       const data = await res.json();
+
       setReading(data);
     } catch (err) {
-      console.error("Failed to fetch or request sensor data:", err);
+      console.error("❌ Fetch error:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="simulation-panel">
       <h2>📊 Latest Sensor Reading</h2>
-      <button onClick={fetchData} className="refresh-button">🔄 Refresh</button>
+      <button onClick={fetchData} className="refresh-button" disabled={loading}>
+        {loading ? "⏳ Loading..." : "🔄 Refresh"}
+      </button>
 
       {reading ? (
         <div className="cards-container">
@@ -42,7 +54,7 @@ export default function LatestSensorReading() {
           </div>
         </div>
       ) : (
-        <p>Loading...</p>
+        <p>No data available. Click refresh to trigger ESP32.</p>
       )}
     </div>
   );
