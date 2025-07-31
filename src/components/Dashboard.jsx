@@ -19,7 +19,7 @@ import LatestSensorReading from '../components/LatestSensorReading';
 export default function Dashboard() {
   return (
     <div className='container'>
-      <WelcomeBanner name="Jay" level={3} />
+      <WelcomeBanner name="User" level={3} />
       <ScorePanel />
       <LatestSensorReading /> 
       <MaintenancePanel />
