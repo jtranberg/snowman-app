@@ -66,14 +66,27 @@ body::before {
   position: absolute;
   top: 1rem;
   left: 1rem;
+  z-index: 5;
 }
 
 .home-logo img {
-  position: fixed;
-  height: 150px;
+  height: 120px;
   width: auto;
   border-radius: 9px;
 }
+
+/* ✅ Mobile logo scaling */
+@media (max-width: 600px) {
+  .home-logo img {
+    height: 80px;
+  }
+
+  .hero-title {
+    font-size: 1.8rem; /* slightly smaller on mobile */
+    margin-top: 100px;  /* add spacing so title clears the logo */
+  }
+}
+
 .mini-stats {
   display: flex;
   flex-wrap: wrap;
