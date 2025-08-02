@@ -1,0 +1,47 @@
+.intro-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background: rgba(15, 23, 42, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9998;
+}
+
+.intro-modal {
+  background: #f1f5f9;
+  padding: 2rem;
+  border-radius: 1rem;
+  text-align: center;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+}
+
+.intro-modal button {
+  margin-top: 1.5rem;
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  background-color: #0ea5e9;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.intro-modal p {
+  color: #334155;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.intro-modal h2 {
+  margin-bottom: 1rem;
+  color: #58c1f1;
+  
+  outline: 1px solid #333;
+  border-radius: 8px;
+} 
