@@ -5,7 +5,8 @@ export default function SecurityModal({ onUnlock }) {
   const [input, setInput] = useState("");
   const [error, setError] = useState("");
 
-  const correctPassword = "snowman"; // 🔒 You can move this to `.env` if needed
+ const correctPassword = import.meta.env.VITE_PROJECT_PASSWORD;
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
