@@ -30,7 +30,6 @@ export default function MissionLog() {
     e.preventDefault();
     if (!message.trim() && !image) return;
 
-
     const formData = new FormData();
     formData.append("author", "Commander Jay");
     formData.append("message", message);
@@ -74,27 +73,24 @@ export default function MissionLog() {
       </form>
 
       <div className="log-entries">
-  {logs.map((log) => (
-    <div key={log._id} className="log-entry">
-
-
-      <div className="log-header">
-        <strong>{log.author}</strong> —{" "}
-        {new Date(log.timestamp).toLocaleString()}
+        {logs.map((log) => (
+          <div key={log._id} className="log-entry">
+            <div className="log-header">
+              <strong>{log.author}</strong> —{" "}
+              {new Date(log.timestamp).toLocaleString()}
+            </div>
+            <p>{log.message || "(Image Only Log)"}</p>
+            {log.image && (
+              <img
+                src={log.image}
+                alt="Attached"
+                className="log-image"
+                onError={(e) => console.error("❌ Broken image:", e.target.src)}
+              />
+            )}
+          </div>
+        ))}
       </div>
-      <p>{log.message}</p>
-      {log.image && (
-        <img
-          src={`${API_URL}${log.image}`}
-          alt="Attached"
-          className="log-image"
-          onError={(e) => console.error("❌ Broken image:", e.target.src)}
-        />
-      )}
-    </div>
-  ))}
-</div>
-
     </div>
   );
 }
