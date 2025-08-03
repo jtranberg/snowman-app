@@ -24,7 +24,7 @@ router.get('/data-requested', (req, res) => {
 router.post('/', async (req, res) => {
   console.log("🧪 Incoming req.body:", req.body);
 
-  const { alpha, bravo, charlie, delta, echo, timestamp } = req.body;
+  const { alpha, bravo, charlie, delta, echo} = req.body;
 
   try {
     const reading = new SensorReading({
@@ -33,7 +33,7 @@ router.post('/', async (req, res) => {
       charlie,
       delta,
       echo,
-      timestamp, // optional
+      timestamp: new Date().toISOString()
     });
     await reading.save();
     res.status(201).json({ success: true });
