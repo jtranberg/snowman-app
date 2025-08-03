@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import dataRoutes from './routes/data.js';
-import logsRouter from './routes/Logs.js';
+import logsRouter from './routes/logs.js';
 import path from "path";
 import process from "process";
 
