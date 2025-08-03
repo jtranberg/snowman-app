@@ -55,22 +55,35 @@ export default function MissionLog() {
     <div className="mission-log-container">
       <h1>❄️🖥️ Mission Log</h1>
 
-      <form className="log-form" onSubmit={handleSubmit}>
-        <textarea
-          placeholder="Enter your mission update..."
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-        />
+      {sessionStorage.getItem("accessGranted") === "true" ? (
+  <form className="log-form" onSubmit={handleSubmit}>
+    <textarea
+      placeholder="Enter your mission update..."
+      value={message}
+      onChange={(e) => setMessage(e.target.value)}
+    />
 
-        <input
-          type="file"
-          name="image" // ← 🔥 REQUIRED for multer to pick up the file
-          accept="image/*"
-          onChange={handleImageChange}
-        />
+    <input
+      type="file"
+      name="image"
+      accept="image/*"
+      onChange={handleImageChange}
+    />
 
-        <button type="submit">Submit Log</button>
-      </form>
+    <button type="submit">Submit Log</button>
+  </form>
+) : (
+  <div className="top-secret-msg">
+    <h2>🕶️ Access Restricted</h2>
+    <p>
+      This mission log is <strong>classified</strong>. Only authorized personnel may submit entries.
+    </p>
+    <p style={{ fontStyle: "italic", opacity: 0.6 }}>
+      Please return to base for access credentials.
+    </p>
+  </div>
+)}
+
 
       <div className="log-entries">
         {logs.map((log) => (
