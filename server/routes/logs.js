@@ -6,14 +6,9 @@ const router = express.Router();
 
 router.post("/", upload.single("image"), async (req, res) => {
   try {
-    const { author, message, password } = req.body;
+    const { author, message } = req.body;
 
-    // eslint-disable-next-line no-undef
-    if (password !== process.env.MISSION_LOG_PASSWORD) {
-      console.warn("🚨 Invalid password attempt for mission log");
-      return res.status(403).json({ error: "Forbidden: Invalid password" });
-    }
-
+   
     const imageUrl = req.file?.path || null;
 
     const newLog = new MissionLog({
