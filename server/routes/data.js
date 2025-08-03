@@ -7,18 +7,23 @@ let dataRequested = false; // 👈 Control flag
 
 // ✅ POST /api/request-data — called by frontend to request a reading
 router.post('/request-data', (req, res) => {
+  console.log("📡 Frontend called /request-data");
   dataRequested = true;
   res.json({ success: true, message: 'ESP32 will send data next cycle.' });
 });
 
 // ✅ GET /api/data-requested — polled by ESP32
 router.get('/data-requested', (req, res) => {
+  console.log("📡 ESP32 polled /data-requested | Flag is:", dataRequested);
   if (dataRequested) {
-    dataRequested = false; // auto-reset
+    dataRequested = false;
+    console.log("✅ Flag consumed. Returning 'true' to ESP32");
     return res.send("true");
   }
+  console.log("⏳ Flag is false. Returning 'false'");
   res.send("false");
 });
+
 
 // ✅ POST /api/data — ESP32 sends reading
 router.post('/', async (req, res) => {
