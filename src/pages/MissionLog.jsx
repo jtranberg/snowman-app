@@ -31,30 +31,35 @@ export default function MissionLog() {
     setImage(e.target.files[0]);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!message.trim() && !image) return;
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (!message.trim() && !image) return;
 
-    const formData = new FormData();
-    formData.append("author", "Commander Jay");
-    formData.append("message", message);
-    if (image) formData.append("image", image);
+  const formData = new FormData();
+  formData.append("author", "Commander Jay");
+  formData.append("message", message);
+  formData.append("password", LOG_PASSWORD); // ✅ Send password to backend
+  if (image) formData.append("image", image);
 
-    try {
-      const res = await fetch(`${API_URL}/api/logs`, {
-        method: "POST",
-        body: formData,
-      });
+  try {
+    const res = await fetch(`${API_URL}/api/logs`, {
+      method: "POST",
+      body: formData,
+    });
 
-      if (res.ok) {
-        setMessage("");
-        setImage(null);
-        fetchLogs();
-      }
-    } catch (err) {
-      console.error("Error posting log:", err);
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("❌ Log submission failed:", res.status, text);
+      return;
     }
-  };
+
+    setMessage("");
+    setImage(null);
+    fetchLogs();
+  } catch (err) {
+    console.error("Error posting log:", err);
+  }
+};
 
   return (
     <div className="mission-log-container">
@@ -107,32 +112,31 @@ export default function MissionLog() {
 
       {/* ✅ Always visible log entries */}
       <div className="log-entries">
-  {logs.length === 0 ? (
-    <p className="log-empty">📭 No logs available yet.</p>
-  ) : (
-    logs.map((log) => (
-      <div key={log._id} className="log-entry">
-        <div className="log-header">
-          <strong>{log.author}</strong> —{" "}
-          {new Date(log.timestamp).toLocaleString()}
-        </div>
-        <p>{log.message || "(Image Only Log)"}</p>
-        {log.image && (
-          <img
-            src={
-              log.image.includes("res.cloudinary.com")
-                ? log.image.replace("/upload/", "/upload/w_300,c_limit/")
-                : log.image
-            }
-            alt="Attached"
-            className="log-image"
-          />
+        {logs.length === 0 ? (
+          <p className="log-empty">📭 No logs available yet.</p>
+        ) : (
+          logs.map((log) => (
+            <div key={log._id} className="log-entry">
+              <div className="log-header">
+                <strong>{log.author}</strong> —{" "}
+                {new Date(log.timestamp).toLocaleString()}
+              </div>
+              <p>{log.message || "(Image Only Log)"}</p>
+              {log.image && (
+                <img
+                  src={
+                    log.image.includes("res.cloudinary.com")
+                      ? log.image.replace("/upload/", "/upload/w_300,c_limit/")
+                      : log.image
+                  }
+                  alt="Attached"
+                  className="log-image"
+                />
+              )}
+            </div>
+          ))
         )}
       </div>
-    ))
-  )}
-</div>
-
     </div>
   );
 }
