@@ -66,13 +66,24 @@
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
 }
 
-.top-secret-msg {
-  background-color: #1e293b;
-  color: #f87171;
-  padding: 1.5rem;
-  border-radius: 10px;
-  text-align: center;
-  margin-bottom: 2rem;
-  box-shadow: 0 0 20px rgba(255, 0, 0, 0.3);
-  border: 2px dashed #f87171;
+.top-secret-msg input[type="password"] {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #f87171;
+  background: #fff;
+  color: #0f172a;
 }
+
+.top-secret-msg button {
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
+  background-color: #f87171;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
