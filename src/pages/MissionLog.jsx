@@ -11,7 +11,8 @@ export default function MissionLog() {
     sessionStorage.getItem("logAccess") === "true"
   );
   const [passwordInput, setPasswordInput] = useState("");
-  const LOG_PASSWORD = "snowmanalpha"; // 🔐 Commander-only access
+  const [passwordError, setPasswordError] = useState("");
+  const LOG_PASSWORD = "snowmanalpha";
 
   const fetchLogs = async () => {
     try {
@@ -31,35 +32,35 @@ export default function MissionLog() {
     setImage(e.target.files[0]);
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
-  if (!message.trim() && !image) return;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!message.trim() && !image) return;
 
-  const formData = new FormData();
-  formData.append("author", "Commander Jay");
-  formData.append("message", message);
-  formData.append("password", LOG_PASSWORD); // ✅ Send password to backend
-  if (image) formData.append("image", image);
+    const formData = new FormData();
+    formData.append("author", "Commander Jay");
+    formData.append("message", message);
+    formData.append("password", LOG_PASSWORD);
+    if (image) formData.append("image", image);
 
-  try {
-    const res = await fetch(`${API_URL}/api/logs`, {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      const res = await fetch(`${API_URL}/api/logs`, {
+        method: "POST",
+        body: formData,
+      });
 
-    if (!res.ok) {
-      const text = await res.text();
-      console.error("❌ Log submission failed:", res.status, text);
-      return;
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("❌ Log submission failed:", res.status, text);
+        return;
+      }
+
+      setMessage("");
+      setImage(null);
+      fetchLogs();
+    } catch (err) {
+      console.error("Error posting log:", err);
     }
-
-    setMessage("");
-    setImage(null);
-    fetchLogs();
-  } catch (err) {
-    console.error("Error posting log:", err);
-  }
-};
+  };
 
   return (
     <div className="mission-log-container">
@@ -72,14 +73,12 @@ export default function MissionLog() {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
           />
-
           <input
             type="file"
             name="image"
             accept="image/*"
             onChange={handleImageChange}
           />
-
           <button type="submit">Submit Log</button>
         </form>
       ) : (
@@ -100,17 +99,20 @@ export default function MissionLog() {
               if (passwordInput === LOG_PASSWORD) {
                 sessionStorage.setItem("logAccess", "true");
                 setAccessGranted(true);
+                setPasswordError("");
               } else {
-                alert("❌ Access Denied.");
+                setPasswordError("🛑 Intrusion Detected: Unauthorized access attempt.");
               }
             }}
           >
             Unlock Mission Entry
           </button>
+          {passwordError && (
+            <p className="access-denied">{passwordError}</p>
+          )}
         </div>
       )}
 
-      {/* ✅ Always visible log entries */}
       <div className="log-entries">
         {logs.length === 0 ? (
           <p className="log-empty">📭 No logs available yet.</p>

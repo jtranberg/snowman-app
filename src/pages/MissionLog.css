@@ -87,3 +87,23 @@
   cursor: pointer;
 }
 
+.access-denied {
+  margin-top: 1rem;
+  color: #f87171;
+  font-weight: bold;
+  font-family: 'Courier New', Courier, monospace;
+  background: rgba(255, 0, 0, 0.05);
+  padding: 0.75rem;
+  border: 1px dashed #f87171;
+  border-radius: 6px;
+  animation: shake 0.3s ease-in-out;
+  text-shadow: 1px 1px #000;
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-3px); }
+  50% { transform: translateX(3px); }
+  75% { transform: translateX(-3px); }
+  100% { transform: translateX(0); }
+}
