@@ -37,6 +37,8 @@ export default function Header() {
         <a href="/score">🏅 My Score</a>
         <a href="/about">❄️ About</a>
         <a href="/contact">📬 Contact</a>
+        <a href="/mission-log">❄️🖥️ Mission Log</a>
+
       </nav>
 
       {/* Mobile toggle button on the RIGHT */}

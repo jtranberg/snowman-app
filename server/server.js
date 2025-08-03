@@ -3,19 +3,25 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import dataRoutes from './routes/data.js';
+import logsRouter from './routes/Logs.js';
+import path from "path";
+import process from "process";
 
 dotenv.config();
 
 const app = express();
-// eslint-disable-next-line no-undef
+
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
 
 app.use('/api/data', dataRoutes);
+app.use('/api/logs', logsRouter);
 
-// eslint-disable-next-line no-undef
+
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('✅ MongoDB connected');

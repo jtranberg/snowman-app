@@ -1,0 +1,53 @@
+.mission-log-container {
+  padding: 2rem;
+  max-width: 700px;
+  margin: 0 auto;
+  color: #e2e8f0;
+}
+
+.log-form {
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.log-form textarea {
+  padding: 1rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: none;
+  resize: vertical;
+  min-height: 120px;
+  margin-bottom: 1rem;
+}
+
+.log-form button {
+  align-self: flex-end;
+  padding: 0.6rem 1.5rem;
+  background: #0ea5e9;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.log-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.log-entry {
+  background-color: #1e293b;
+  padding: 1rem 1.2rem;
+  border-left: 4px solid #38bdf8;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+}
+
+.log-header {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  margin-bottom: 0.5rem;
+}

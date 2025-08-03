@@ -9,6 +9,7 @@ import Contact from './pages/Contact';
 import MyScore from './pages/MyScore';
 import SecurityModal from './components/SecurityModal';
 import IntroModal from './components/IntroModal';
+import MissionLog from './pages/MissionLog';
 
 export default function App() {
   const [unlocked, setUnlocked] = useState(false);
@@ -58,6 +59,8 @@ export default function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/score" element={<MyScore />} />
+        <Route path="/mission-log" element={<MissionLog />} />
+
       </Routes>
     </Router>
   );
