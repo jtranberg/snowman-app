@@ -6,32 +6,35 @@ export default function LatestSensorReading() {
   const [loading, setLoading] = useState(false);
 
   const fetchData = async () => {
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      // ✅ Step 1: Tell ESP32 to send data
-      const triggerRes = await fetch("https://snowman-app.onrender.com/api/data/request-data", {
-        method: "POST",
-      });
+    const triggerRes = await fetch("https://snowman-app.onrender.com/api/data/request-data", {
+      method: "POST",
+    });
 
-      if (!triggerRes.ok) {
-        throw new Error("Failed to trigger ESP32 reading.");
-      }
-
-      // ✅ Step 2: Wait 1200ms to give ESP32 time to respond
-      await new Promise(resolve => setTimeout(resolve, 1200));
-
-      // ✅ Step 3: Fetch the new latest reading
-      const res = await fetch("https://snowman-app.onrender.com/api/data/latest");
-      const data = await res.json();
-
-      setReading(data);
-    } catch (err) {
-      console.error("❌ Fetch error:", err);
-    } finally {
-      setLoading(false);
+    if (!triggerRes.ok) {
+      throw new Error("Failed to trigger ESP32 reading.");
     }
-  };
+
+    // Wait up to 3s for ESP32 to send
+    await new Promise(resolve => setTimeout(resolve, 3000));
+
+    const res = await fetch("https://snowman-app.onrender.com/api/data/latest");
+    if (!res.ok) {
+      throw new Error("Failed to fetch latest reading.");
+    }
+
+    const data = await res.json();
+    console.log("✅ Latest Reading:", data);
+    setReading(data);
+  } catch (err) {
+    console.error("❌ Fetch error:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="simulation-panel">
