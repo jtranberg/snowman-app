@@ -82,10 +82,9 @@ export default function MissionLog() {
             <p>{log.message || "(Image Only Log)"}</p>
             {log.image && (
               <img
-                src={log.image}
+                src={log.image.replace("/upload/", "/upload/w_600,c_limit/")}
                 alt="Attached"
                 className="log-image"
-                onError={(e) => console.error("❌ Broken image:", e.target.src)}
               />
             )}
           </div>
