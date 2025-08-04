@@ -52,7 +52,7 @@ export default function LatestSensorReading() {
             </div>
           ))}
           <div className="sensor-card timestamp-card">
-            <h3>Timestamp</h3>
+            <h3>Time</h3>
             <p>{new Date(reading.timestamp).toLocaleString()}</p>
           </div>
         </div>

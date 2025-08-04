@@ -1,30 +1,46 @@
 import './ScorePanel.css';
 import { useEffect, useState } from 'react';
 
-export default function ScorePanel() {
-  const [animatedToday, setAnimatedToday] = useState(0);
-  const capturedToday = 5.2;      // kg (target)
-  const totalCaptured = 2100;     // kg (2.1 tons)
-  const snowmanLevel = 3;         // Gamification XP
-  const tripsOffset = 42;         // Equivalent trips
-  const airPurified = 380000;     // Liters of air
+function useAnimatedValue(target, precision = 1, duration = 1000) {
+  const [value, setValue] = useState(0);
 
-  // Animate the CO₂ Today value like a digital gauge
   useEffect(() => {
     let current = 0;
-    const step = capturedToday / 30;
-    const interval = setInterval(() => {
-      current += step;
-      if (current >= capturedToday) {
-        setAnimatedToday(capturedToday.toFixed(1));
-        clearInterval(interval);
-      } else {
-        setAnimatedToday(current.toFixed(1));
-      }
-    }, 30);
+    const steps = 30;
+    const increment = target / steps;
+    const interval = duration / steps;
 
-    return () => clearInterval(interval);
-  }, []);
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= target) {
+        setValue(target.toFixed(precision));
+        clearInterval(timer);
+      } else {
+        setValue(current.toFixed(precision));
+      }
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, [target, precision, duration]);
+
+  return value;
+}
+
+
+
+export default function ScorePanel() {
+  const capturedToday = 5.2;
+  const totalCaptured = 2100;     // kg
+  const snowmanLevel = 12;
+  const tripsOffset = 42;
+  const airPurified = 380000;
+
+  const animatedToday = useAnimatedValue(capturedToday, 1, 4000);
+const animatedTotal = useAnimatedValue(totalCaptured / 1000, 1, 4000);
+const animatedTrips = useAnimatedValue(tripsOffset, 0, 4000);
+const animatedAir = useAnimatedValue(airPurified / 1000, 0, 4000);
+const animatedSnowman = useAnimatedValue(snowmanLevel, 0, 4000);
+
 
   return (
     <div className="score-panel">
@@ -38,25 +54,28 @@ export default function ScorePanel() {
         </div>
         <div className="dash-item">
           <span className="dash-label">Total</span>
-          <span className="dash-value">{(totalCaptured / 1000).toFixed(1)} t</span>
+          <span className="dash-value">{animatedTotal} t</span>
           <span className="dash-desc">All-Time Capture</span>
         </div>
         <div className="dash-item">
-          <span className="dash-label">Level</span>
-          <span className="dash-value">⛄ {snowmanLevel}</span>
-          <span className="dash-desc">Snowman Score</span>
-        </div>
+  <span className="dash-label">Level</span>
+  <span className="dash-value">
+    ⛄ <span className="animated-number">{animatedSnowman}</span>
+  </span>
+  <span className="dash-desc">Snowman Score</span>
+</div>
+
       </div>
 
       <div className="dash-row">
         <div className="dash-item">
           <span className="dash-label">Trips</span>
-          <span className="dash-value">{tripsOffset}</span>
+          <span className="dash-value">{animatedTrips}</span>
           <span className="dash-desc">Commutes Offset</span>
         </div>
         <div className="dash-item">
           <span className="dash-label">Air</span>
-          <span className="dash-value">{(airPurified / 1000).toLocaleString()}k L</span>
+          <span className="dash-value">{animatedAir}k L</span>
           <span className="dash-desc">Air Cleaned</span>
         </div>
       </div>

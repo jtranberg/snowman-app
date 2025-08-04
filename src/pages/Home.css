@@ -1,134 +1,146 @@
 .home-container {
-  text-align: center;
-  padding: 3rem 1rem;
-    position: relative;
+  text-align: center !important;
+  padding: 3rem 1rem !important;
+  position: relative !important;
+}
+.quote {
+  font-size: 2rem !important;
+  color: #94a3b8 !important;
+  margin: 2rem auto !important;
+  max-width: 800px !important;
 }
 
 .hero-title {
-  font-size: 2.5rem;
-  color: #facc15;
-  margin-bottom: 0.5rem;
+  font-size: 2.5rem !important;
+  color: #facc15 !important;
+  margin-bottom: 0.5rem !important;
 }
 
 .hero-subtext {
-  font-size: 1.1rem;
-  color: #cbd5e1;
-  margin-bottom: 2rem;
+  font-size: 1.1rem !important;
+  color: #cbd5e1 !important;
+  margin-bottom: 2rem !important;
 }
 
-
-
 .label {
-  display: block;
-  font-size: 0.8rem;
-  color: #94a3b8;
+  display: block !important;
+  font-size: 0.8rem !important;
+  color: #94a3b8 !important;
 }
 
 .value {
-  font-size: 1.4rem;
-  font-weight: bold;
-  color: #38bdf8;
+  font-size: 1.4rem !important;
+  font-weight: bold !important;
+  color: #38bdf8 !important;
 }
 
 .alert {
-  color: #f97316;
+  color: #f97316 !important;
 }
 
 .home-buttons button {
-  margin: 0.5rem;
+  margin: 0.5rem !important;
 }
 
 .quote {
-  margin-top: 3rem;
-  font-style: italic;
-  color: #94a3b8;
+  margin-top: 3rem !important;
+  font-style: italic !important;
+  color: #94a3b8 !important;
 }
 
-
-/* Add this to index.css or Home.css */
 body::before {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-image: url('https://www.transparenttextures.com/patterns/snow.png'); /* or use particles.js later */
-  opacity: 0.05;
-  z-index: -1;
-  animation: drift 60s linear infinite;
+  content: "" !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background-image: url("https://www.transparenttextures.com/patterns/snow.png") !important;
+  opacity: 0.05 !important;
+  z-index: -1 !important;
+  animation: drift 60s linear infinite !important;
 }
 
 @keyframes drift {
-  from { background-position: 0 0; }
-  to { background-position: 0 1000px; }
+  from {
+    background-position: 0 0 !important;
+  }
+  to {
+    background-position: 0 1000px !important;
+  }
 }
 
-
 .home-logo {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  z-index: 5;
+  position: absolute !important;
+  top: 1rem !important;
+  left: 1rem !important;
+  z-index: 5 !important;
 }
 
 .home-logo img {
-  height: 120px;
-  width: auto;
-  border-radius: 9px;
+  height: 120px !important;
+  width: auto !important;
+  border-radius: 9px !important;
 }
 
-/* ✅ Mobile logo scaling */
 @media (max-width: 600px) {
   .home-logo img {
-    height: 80px;
+    height: 80px !important;
   }
 
   .hero-title {
-    font-size: 1.8rem; /* slightly smaller on mobile */
-    margin-top: 100px;  /* add spacing so title clears the logo */
+    font-size: 1.8rem !important;
+    margin-top: 100px !important;
   }
 }
 
 .mini-stats {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 1rem;
-  margin: 1rem 0;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  gap: 2rem !important;
+
+  margin: 2rem 0 !important;
 }
 
 .stat-card {
-  width: clamp(140px, 22vw, 200px); /* 👈 Responsive width: min 140px, max 200px */
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 12px;
-  padding: 1rem;
-  margin: 0.5rem;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.04), 0 6px 16px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(6px);
-  text-align: center;
-  transition: transform 0.2s ease;
-  font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+  width: 160px !important;
+  height: 160px !important;
+  background: radial-gradient(
+    circle at center,
+    #1e293b 40%,
+    #0f172a 100%
+  ) !important;
+  border-radius: 50% !important;
+  padding: .5rem !important;
+  box-shadow: inset 0 0 12px rgba(56, 189, 248, 0.3), 0 0 8px rgba(0, 0, 0, 0.6) !important;
+  border: 2px solid #334155 !important;
+  text-align: center !important;
+  transition: transform 0.3s ease !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  font-family: "Digital-7 Mono", monospace !important;
 }
 
-
 .stat-card:hover {
-  transform: translateY(-4px);
-  
+  transform: scale(1.05) !important;
 }
 
 .stat-card .label {
-  display: block;
-  font-size: 0.8rem;
-  color: #94a3b8;
-  margin-bottom: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  text-shadow: 1px 1px 2px #000;
+  font-size: 0.7rem !important;
+  color: #7dd3fc !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  font-weight: 600 !important;
+  margin-top: 0.5rem !important;
 }
 
 .stat-card .value {
-  font-size: 1.6rem;
-  font-weight: bold;
-  color: #38bdf8;
-  text-shadow: 1px 1px 2px #000;
+  font-size: 1.6rem !important;
+  font-weight: bold !important;
+  color: #38bdf8 !important;
+  text-shadow: 0 0 5px rgba(56, 189, 248, 0.4) !important;
+  margin-bottom: 0.25rem !important;
 }
-
-

@@ -38,7 +38,7 @@ export default function Home() {
         </div>
         <div className={`stat-card ${fadeIn ? 'fade-in' : ''}`}>
           <span className="label">Snowman Level</span>
-          <span className="value">⛄ 3</span>
+          <span className="value">⛄ 27</span>
         </div>
         <div className={`stat-card ${fadeIn ? 'fade-in' : ''}`}>
           <span className="label">Maintenance</span>
@@ -46,7 +46,7 @@ export default function Home() {
         </div>
       </div>
 
-      <h2 style={{ marginTop: "2rem" }}>🔬 Latest Capture Summary</h2>
+      <h2 >🔬 Latest Capture Summary</h2>
       <div className="mini-stats">
         <CO2Captured value={summary?.co2_removed_tons ?? null} animate={fadeIn} />
         <Condensate value={summary?.condensate_L ?? null} animate={fadeIn} />
