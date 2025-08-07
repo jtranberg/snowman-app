@@ -22,7 +22,7 @@ export default function WiFiSetupPanel() {
       const service = await server.getPrimaryService(serviceUUID);
       const characteristic = await service.getCharacteristic(characteristicUUID);
 
-      const json = JSON.stringify({ ssid, password });
+      const json = JSON.stringify({ ssid, password }) + '\n';
       const encoder = new TextEncoder();
       await characteristic.writeValue(encoder.encode(json));
 
