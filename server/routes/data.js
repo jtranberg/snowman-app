@@ -8,7 +8,12 @@ let dataRequested = false; // control flag (single-instance memory)
 
 // ===== Debug: log every hit =====
 router.use((req, _res, next) => {
-  console.log('➡️', req.method, req.originalUrl, '| UA=', req.headers['user-agent'] || 'n/a', '| IP=', req.ip);
+  console.log(
+    '➡️', req.method, req.originalUrl,
+    '| CT=', req.headers['content-type'] || 'n/a',
+    '| UA=', req.headers['user-agent'] || 'n/a',
+    '| IP=', req.ip
+  );
   next();
 });
 
@@ -25,30 +30,43 @@ const toVolt = (v) => {
   return (n !== undefined && n >= 8 && n <= 16) ? n : undefined; // tweak bounds if needed
 };
 
+// If body arrived as a raw string (e.g. text/plain), try to JSON.parse it.
+// (Global app.use(express.json()) should handle application/json already.)
+router.use((req, _res, next) => {
+  if (typeof req.body === 'string') {
+    try {
+      req.body = JSON.parse(req.body);
+    } catch {
+      // leave as string; handlers will cope
+    }
+  }
+  next();
+});
+
 // ✅ POST /api/data/request-data — called by frontend to request a reading
 router.post('/request-data', (_req, res) => {
-  console.log("📡 Frontend called /request-data");
+  console.log('📡 Frontend called /request-data');
   dataRequested = true;
   res.json({ success: true, message: 'ESP32 will send data next cycle.' });
 });
 
 // ✅ GET /api/data/data-requested — polled by ESP32
 router.get('/data-requested', (_req, res) => {
-  console.log("📡 ESP32 polled /data-requested | Flag is:", dataRequested);
+  console.log('📡 ESP32 polled /data-requested | Flag is:', dataRequested);
   if (dataRequested) {
     dataRequested = false;
-    console.log("✅ Flag consumed. Returning 'true' to ESP32");
-    return res.send("true");
+    console.log('✅ Flag consumed. Returning "true" to ESP32');
+    return res.send('true');
   }
-  console.log("⏳ Flag is false. Returning 'false'");
-  res.send("false");
+  console.log('⏳ Flag is false. Returning "false"');
+  res.send('false');
 });
 
 // ✅ POST /api/data — ESP32 sends reading
 router.post('/', async (req, res) => {
   try {
-    console.log("🧪 Incoming req.body:", req.body);
-    console.log("📥 RAW BODY KEYS:", Object.keys(req.body || {}));
+    console.log('🧪 Incoming req.body:', req.body);
+    console.log('📥 RAW BODY KEYS:', Object.keys(req.body || {}));
 
     // Accept both naming schemes for temps (alpha..echo) or (intake..cellC)
     const alpha   = toNum(req.body.alpha   !== undefined && req.body.alpha   !== null ? req.body.alpha   : req.body.intake);
@@ -58,17 +76,17 @@ router.post('/', async (req, res) => {
     const echo    = toNum(req.body.echo    !== undefined && req.body.echo    !== null ? req.body.echo    : req.body.cellC);
 
     // Only store plausible 12V-ish values
-    const voltA   = toVolt(req.body.voltA);
-    const voltB   = toVolt(req.body.voltB);
-    const voltC   = toVolt(req.body.voltC);
+    const voltA = toVolt(req.body.voltA);
+    const voltB = toVolt(req.body.voltB);
+    const voltC = toVolt(req.body.voltC);
 
     if (voltA === undefined && voltB === undefined && voltC === undefined) {
-      console.warn("⚠️ all volt fields missing/implausible. Check device payload & Content-Type.");
+      console.warn('⚠️ all volt fields missing/implausible. Check device payload & Content-Type.');
     } else {
-      console.log("⚡ VOLT FIELDS PARSED:", { voltA, voltB, voltC });
+      console.log('⚡ VOLT FIELDS PARSED:', { voltA, voltB, voltC });
     }
 
-    const state     = typeof req.body.state === 'string' ? req.body.state : undefined;
+    const state = typeof req.body.state === 'string' ? req.body.state : undefined;
     // Use server time to avoid stale client timestamps
     const timestamp = new Date();
 
@@ -80,10 +98,10 @@ router.post('/', async (req, res) => {
     });
 
     await reading.save();
-    console.log("✅ Saved new reading:", reading._id);
+    console.log('✅ Saved new reading:', reading._id);
     res.status(201).json({ success: true });
   } catch (err) {
-    console.error("❌ Save error:", err);
+    console.error('❌ Save error:', err);
     res.status(500).json({ error: 'Failed to save reading', detail: String(err) });
   }
 });
@@ -91,11 +109,13 @@ router.post('/', async (req, res) => {
 // ✅ GET /api/data/latest — prefer docs with voltages, else fallback to any
 router.get('/latest', async (_req, res) => {
   try {
-    const withVolts = await SensorReading.findOne({ $or: [
-      { voltA: { $exists: true } },
-      { voltB: { $exists: true } },
-      { voltC: { $exists: true } },
-    ]}).sort({ timestamp: -1 });
+    const withVolts = await SensorReading.findOne({
+      $or: [
+        { voltA: { $exists: true } },
+        { voltB: { $exists: true } },
+        { voltC: { $exists: true } },
+      ],
+    }).sort({ timestamp: -1 });
 
     const latestAny = await SensorReading.findOne().sort({ timestamp: -1 });
     const latest = withVolts || latestAny;
@@ -109,8 +129,20 @@ router.get('/latest', async (_req, res) => {
 
     res.json(latest);
   } catch (err) {
-    console.error("❌ Latest fetch error:", err);
+    console.error('❌ Latest fetch error:', err);
     res.status(500).json({ error: 'Failed to fetch latest reading' });
+  }
+});
+
+// ✅ GET /api/data/recent?limit=3 — last N docs (new)
+router.get('/recent', async (req, res) => {
+  try {
+    const limit = Math.max(1, Math.min(50, Number(req.query.limit || 5)));
+    const rows = await SensorReading.find().sort({ timestamp: -1 }).limit(limit);
+    res.json(rows);
+  } catch (err) {
+    console.error('❌ Recent fetch error:', err);
+    res.status(500).json({ error: 'Failed to fetch recent readings' });
   }
 });
 
