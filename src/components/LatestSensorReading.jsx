@@ -3,28 +3,47 @@ import "./LatestSensorReading.css";
 
 const API = import.meta.env.VITE_API_URL || "";
 
-function fmt(v, d=2){ if(v==null||Number.isNaN(Number(v))) return "—"; return Number(v).toFixed(d); }
+function fmt(v, d = 2) {
+  if (v == null || Number.isNaN(Number(v))) return "—";
+  return Number(v).toFixed(d);
+}
 
-async function fetchJson(url, init){
+// SAFE fetch: handles 204 and empty bodies (no "Unexpected end of JSON input")
+async function fetchJson(url, init) {
   const res = await fetch(url, { cache: "no-store", ...init });
-  if(!res.ok){
-    if(res.status === 204) return null; // fresh-only mode returned “no new data”
-    const t = await res.text().catch(()=> "");
-    throw new Error(`${res.status} ${res.statusText}${t?` — ${t}`:""}`);
+
+  // 204 → no content (e.g., fresh-only mode: nothing new yet)
+  if (res.status === 204) return null;
+
+  // Read text first to avoid JSON parse errors on empty responses
+  const text = await res.text().catch(() => "");
+
+  // Non-OK responses: include any server text for easier debugging
+  if (!res.ok) {
+    throw new Error(`${res.status} ${res.statusText}${text ? ` — ${text}` : ""}`);
   }
-  return await res.json();
+
+  // OK but empty → treat as "no data"
+  if (!text) return null;
+
+  // Parse safely
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new Error("Invalid JSON from server.");
+  }
 }
 
 export default function LatestSensorReading() {
-  const [reading, setReading]   = useState(null);
-  const [loading, setLoading]   = useState(false);
+  const [reading, setReading] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [auto, setAuto]         = useState(false);
+  const [auto, setAuto] = useState(false);
   const timerRef = useRef(null);
 
   const ageSec = useMemo(() => {
     if (!reading?.timestamp) return null;
-    return Math.max(0, Math.round((Date.now() - new Date(reading.timestamp).getTime())/1000));
+    return Math.max(0, Math.round((Date.now() - new Date(reading.timestamp).getTime()) / 1000));
   }, [reading?.timestamp]);
 
   const fetchOnce = async () => {
@@ -32,28 +51,33 @@ export default function LatestSensorReading() {
       setLoading(true);
       setErrorMsg("");
 
-      // tell backend to request a fresh device publish
+      // 1) ask backend to request a fresh device publish
       await fetchJson(`${API}/api/data/request-data`, { method: "POST" });
 
-      // give the device a moment to send
-      await new Promise(r => setTimeout(r, 2500));
+      // 2) allow device time to publish
+      await new Promise((r) => setTimeout(r, 2500));
 
-      // pull latest; require it to be <=6s old (adjust as you like)
+      // 3) pull latest; require it to be <=6s old (adjust or remove param if you like)
       const data = await fetchJson(`${API}/api/data/latest?maxAgeSec=6`);
-      if (!data) return; // no newer data yet
+      if (!data) {
+        // No newer doc within the freshness window — keep current UI stable
+        console.log("⏳ No fresh data within maxAgeSec.");
+        return;
+      }
 
       const normalized = {
-        alpha:   data.alpha   ?? data.intake   ?? null,
-        bravo:   data.bravo   ?? data.postCryo ?? null,
-        charlie: data.charlie ?? data.cellA    ?? null,
-        delta:   data.delta   ?? data.cellB    ?? null,
-        echo:    data.echo    ?? data.cellC    ?? null,
-        voltA:   data.voltA ?? null,
-        voltB:   data.voltB ?? null,
-        voltC:   data.voltC ?? null,
+        alpha: data.alpha ?? data.intake ?? null,
+        bravo: data.bravo ?? data.postCryo ?? null,
+        charlie: data.charlie ?? data.cellA ?? null,
+        delta: data.delta ?? data.cellB ?? null,
+        echo: data.echo ?? data.cellC ?? null,
+        voltA: data.voltA ?? null,
+        voltB: data.voltB ?? null,
+        voltC: data.voltC ?? null,
         timestamp: data.timestamp ?? data.updatedAt ?? null,
         state: data.state ?? "IDLE",
       };
+
       setReading(normalized);
       console.log("✅ Latest Reading:", normalized);
     } catch (e) {
@@ -64,28 +88,41 @@ export default function LatestSensorReading() {
     }
   };
 
+  // Optional auto-refresh every 5s
   useEffect(() => {
-    if (!auto) { if (timerRef.current) clearInterval(timerRef.current); return; }
-    fetchOnce(); // run immediately
+    if (!auto) {
+      if (timerRef.current) clearInterval(timerRef.current);
+      timerRef.current = null;
+      return;
+    }
+    fetchOnce(); // run immediately when toggled on
     timerRef.current = setInterval(fetchOnce, 5000);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [auto]); 
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+      timerRef.current = null;
+    };
+    
+  }, [auto]);
 
   return (
     <div className="simulation-panel">
       <h2>📊 Latest Sensor Reading</h2>
 
-      <div className="toolbar" style={{display:'flex',gap:10,alignItems:'center',flexWrap:'wrap',marginBottom:8}}>
+      <div
+        className="toolbar"
+        style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 8 }}
+      >
         <button onClick={fetchOnce} className="refresh-button" disabled={loading}>
           {loading ? "⏳ Loading..." : "🔄 Refresh"}
         </button>
-        <label style={{display:'flex',alignItems:'center',gap:6}}>
-          <input type="checkbox" checked={auto} onChange={e=>setAuto(e.target.checked)} />
+        <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <input type="checkbox" checked={auto} onChange={(e) => setAuto(e.target.checked)} />
           Auto refresh
         </label>
-        <span style={{fontSize:'.85rem',opacity:.8}}>
+        <span style={{ fontSize: ".85rem", opacity: 0.8 }}>
           State: <strong>{reading?.state || "—"}</strong>
-          {" • "}Last update: <strong>{ageSec==null ? "—" : `${ageSec}s ago`}</strong>
+          {" • "}
+          Last update: <strong>{ageSec == null ? "—" : `${ageSec}s ago`}</strong>
         </span>
       </div>
 
@@ -93,11 +130,12 @@ export default function LatestSensorReading() {
 
       {reading ? (
         <>
+          {/* Temperatures */}
           <div className="cards-container">
-            {["alpha","bravo","charlie","delta","echo"].map(s=>(
+            {["alpha", "bravo", "charlie", "delta", "echo"].map((s) => (
               <div key={s} className="sensor-card">
-                <h3>{s[0].toUpperCase()+s.slice(1)}</h3>
-                <p>{fmt(reading[s],1)}°C</p>
+                <h3>{s[0].toUpperCase() + s.slice(1)}</h3>
+                <p>{fmt(reading[s], 1)}°C</p>
               </div>
             ))}
             <div className="sensor-card timestamp-card">
@@ -106,18 +144,22 @@ export default function LatestSensorReading() {
             </div>
           </div>
 
+          {/* Voltages */}
           <div className="cards-container mt-voltages">
             <div className="sensor-card voltage-card">
               <h3>Stage A Voltage</h3>
-              <p className="value-large">{fmt(reading.voltA,2)}</p><div className="unit-caption">V</div>
+              <p className="value-large">{fmt(reading.voltA, 2)}</p>
+              <div className="unit-caption">V</div>
             </div>
             <div className="sensor-card voltage-card">
               <h3>Stage B Voltage</h3>
-              <p className="value-large">{fmt(reading.voltB,2)}</p><div className="unit-caption">V</div>
+              <p className="value-large">{fmt(reading.voltB, 2)}</p>
+              <div className="unit-caption">V</div>
             </div>
             <div className="sensor-card voltage-card">
               <h3>Stage C Voltage</h3>
-              <p className="value-large">{fmt(reading.voltC,2)}</p><div className="unit-caption">V</div>
+              <p className="value-large">{fmt(reading.voltC, 2)}</p>
+              <div className="unit-caption">V</div>
             </div>
           </div>
         </>
