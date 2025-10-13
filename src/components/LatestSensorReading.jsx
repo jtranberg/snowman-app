@@ -8,25 +8,15 @@ function fmt(v, d = 2) {
   return Number(v).toFixed(d);
 }
 
-// SAFE fetch: handles 204 and empty bodies (no "Unexpected end of JSON input")
+// SAFE fetch: handles empty bodies too
 async function fetchJson(url, init) {
   const res = await fetch(url, { cache: "no-store", ...init });
-
-  // 204 → no content (e.g., fresh-only mode: nothing new yet)
-  if (res.status === 204) return null;
-
-  // Read text first to avoid JSON parse errors on empty responses
   const text = await res.text().catch(() => "");
-
-  // Non-OK responses: include any server text for easier debugging
   if (!res.ok) {
+    // 204 (No Content) would not be ok here — but we won't use freshness anymore
     throw new Error(`${res.status} ${res.statusText}${text ? ` — ${text}` : ""}`);
   }
-
-  // OK but empty → treat as "no data"
-  if (!text) return null;
-
-  // Parse safely
+  if (!text) return null; // tolerate empty body
   try {
     return JSON.parse(text);
   } catch {
@@ -50,18 +40,22 @@ export default function LatestSensorReading() {
     try {
       setLoading(true);
       setErrorMsg("");
+      console.log("📡 API base:", API || "(same origin)");
 
-      // 1) ask backend to request a fresh device publish
-      await fetchJson(`${API}/api/data/request-data`, { method: "POST" });
+      // 1) Ask backend to request a fresh device publish (ignore failures gracefully)
+      try {
+        await fetchJson(`${API}/api/data/request-data`, { method: "POST" });
+      } catch (e) {
+        console.warn("request-data failed (continuing to fetch latest):", e?.message);
+      }
 
-      // 2) allow device time to publish
+      // 2) Give the device a moment to send (tune if needed)
       await new Promise((r) => setTimeout(r, 2500));
 
-      // 3) pull latest; require it to be <=6s old (adjust or remove param if you like)
-      const data = await fetchJson(`${API}/api/data/latest?maxAgeSec=6`);
+      // 3) Fetch latest WITHOUT freshness filter, so we always get JSON
+      const data = await fetchJson(`${API}/api/data/latest`);
       if (!data) {
-        // No newer doc within the freshness window — keep current UI stable
-        console.log("⏳ No fresh data within maxAgeSec.");
+        setErrorMsg("No data returned from server.");
         return;
       }
 
@@ -101,12 +95,17 @@ export default function LatestSensorReading() {
       if (timerRef.current) clearInterval(timerRef.current);
       timerRef.current = null;
     };
-    
+   
   }, [auto]);
 
   return (
     <div className="simulation-panel">
-      <h2>📊 Latest Sensor Reading</h2>
+      <h2>
+        📊 Latest Sensor Reading{" "}
+        <small style={{ opacity: 0.6, fontSize: "0.8em" }}>
+          ({API || window.location.origin})
+        </small>
+      </h2>
 
       <div
         className="toolbar"
