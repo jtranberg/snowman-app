@@ -32,7 +32,9 @@ async function fetchJson(url, init) {
   const res = await fetch(url, { cache: "no-store", ...init });
   const text = await res.text().catch(() => "");
   if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}${text ? ` — ${text}` : ""}`);
+    throw new Error(
+      `${res.status} ${res.statusText}${text ? ` — ${text}` : ""}`
+    );
   }
   if (!text) return null;
   try {
@@ -90,7 +92,10 @@ export default function LatestSensorReading() {
       try {
         await fetchJson(`${API}/api/data/request-data`, { method: "POST" });
       } catch (e) {
-        console.warn("request-data failed (continuing to fetch latest):", e?.message);
+        console.warn(
+          "request-data failed (continuing to fetch latest):",
+          e?.message
+        );
       }
 
       // Give the device a moment to send
@@ -150,16 +155,15 @@ export default function LatestSensorReading() {
     };
   }, [auto]);
 
-//   const resetRuntime = async () => {
-//   try {
-//     await fetch(`${API}/api/data/runtime/reset`, { method: "POST" });
-//     const rt = await fetchJson(`${API}/api/data/runtime`);
-//     setRuntime(rt || { totalOnMs: 0, lastState: "IDLE", lastTs: null });
-//   } catch (e) {
-//     console.warn("runtime reset failed:", e?.message);
-//   }
-// };
-
+  //   const resetRuntime = async () => {
+  //   try {
+  //     await fetch(`${API}/api/data/runtime/reset`, { method: "POST" });
+  //     const rt = await fetchJson(`${API}/api/data/runtime`);
+  //     setRuntime(rt || { totalOnMs: 0, lastState: "IDLE", lastTs: null });
+  //   } catch (e) {
+  //     console.warn("runtime reset failed:", e?.message);
+  //   }
+  // };
 
   return (
     <div className="simulation-panel">
@@ -180,7 +184,11 @@ export default function LatestSensorReading() {
           marginBottom: 8,
         }}
       >
-        <button onClick={fetchOnce} className="refresh-button" disabled={loading}>
+        <button
+          onClick={fetchOnce}
+          className="refresh-button"
+          disabled={loading}
+        >
           {loading ? "⏳ Loading..." : "🔄 Refresh"}
         </button>
         <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -194,7 +202,8 @@ export default function LatestSensorReading() {
         <span style={{ fontSize: ".85rem", opacity: 0.8 }}>
           State: <strong>{reading?.state || "—"}</strong>
           {" • "}
-          Last update: <strong>{ageSec == null ? "—" : `${ageSec}s ago`}</strong>
+          Last update:{" "}
+          <strong>{ageSec == null ? "—" : `${ageSec}s ago`}</strong>
           {" • "}
           On-time: <strong>{runtimeDisplay}</strong>
         </span>
@@ -245,16 +254,13 @@ export default function LatestSensorReading() {
         <p>No data available. Click refresh to trigger ESP32.</p>
       )}
       {/* Total On-Time */}
-<div className="cards-container mt-voltages">
+      <div className="cards-container mt-voltages">
   <div className="sensor-card runtime-card">
     <h3>Total On-Time</h3>
     <p className="value-large">{runtimeDisplay}</p>
     <div className="unit-caption">HH:MM:SS</div>
 
     <div style={{ marginTop: 8, display: "flex", gap: 8, alignItems: "center" }}>
-      {/* <button className="small-button" onClick={resetRuntime} title="Zero the accumulated on-time on the server"> */}
-        Reset
-      {/* </button> */}
       <span style={{ fontSize: ".85rem", opacity: 0.75 }}>
         State: <strong>{(reading?.state || runtime?.lastState) ?? "—"}</strong>
       </span>
