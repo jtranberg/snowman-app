@@ -150,15 +150,15 @@ export default function LatestSensorReading() {
     };
   }, [auto]);
 
-  const resetRuntime = async () => {
-  try {
-    await fetch(`${API}/api/data/runtime/reset`, { method: "POST" });
-    const rt = await fetchJson(`${API}/api/data/runtime`);
-    setRuntime(rt || { totalOnMs: 0, lastState: "IDLE", lastTs: null });
-  } catch (e) {
-    console.warn("runtime reset failed:", e?.message);
-  }
-};
+//   const resetRuntime = async () => {
+//   try {
+//     await fetch(`${API}/api/data/runtime/reset`, { method: "POST" });
+//     const rt = await fetchJson(`${API}/api/data/runtime`);
+//     setRuntime(rt || { totalOnMs: 0, lastState: "IDLE", lastTs: null });
+//   } catch (e) {
+//     console.warn("runtime reset failed:", e?.message);
+//   }
+// };
 
 
   return (
@@ -252,9 +252,9 @@ export default function LatestSensorReading() {
     <div className="unit-caption">HH:MM:SS</div>
 
     <div style={{ marginTop: 8, display: "flex", gap: 8, alignItems: "center" }}>
-      <button className="small-button" onClick={resetRuntime} title="Zero the accumulated on-time on the server">
+      {/* <button className="small-button" onClick={resetRuntime} title="Zero the accumulated on-time on the server"> */}
         Reset
-      </button>
+      {/* </button> */}
       <span style={{ fontSize: ".85rem", opacity: 0.75 }}>
         State: <strong>{(reading?.state || runtime?.lastState) ?? "—"}</strong>
       </span>
