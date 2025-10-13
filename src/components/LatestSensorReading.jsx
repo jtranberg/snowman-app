@@ -169,9 +169,7 @@ export default function LatestSensorReading() {
     <div className="simulation-panel">
       <h2>
         📊 Latest Sensor Reading{" "}
-        <small style={{ opacity: 0.6, fontSize: "0.8em" }}>
-          ({API || window.location.origin})
-        </small>
+        
       </h2>
 
       <div
