@@ -168,7 +168,7 @@ export default function LatestSensorReading() {
   return (
     <div className="simulation-panel">
       <h2>
-        📊 Latest Sensor Reading{" "}
+        Sensor Reading{" "}
         
       </h2>
 
