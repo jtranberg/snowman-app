@@ -83,13 +83,29 @@ router.get('/latest', async (req, res) => {
   try {
     const withVolts = await SensorReading.findOne({ voltA: { $exists: true } }).sort({ timestamp: -1 });
     const latestAny = await SensorReading.findOne().sort({ timestamp: -1 });
-    if (!withVolts && !latestAny) return res.status(404).json({ error: 'No sensor data found' });
-    res.json(withVolts || latestAny);
+    const latest = withVolts || latestAny;
+    if (!latest) return res.status(404).json({ error: 'No sensor data found' });
+
+    // 🔒 no caching anywhere
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('Surrogate-Control', 'no-store');
+
+    // (Optional) require freshness: /api/data/latest?maxAgeSec=6
+    const maxAgeSec = Number(req.query.maxAgeSec || 0);
+    if (maxAgeSec > 0) {
+      const ageMs = Date.now() - new Date(latest.timestamp).getTime();
+      if (ageMs > maxAgeSec * 1000) return res.status(204).send(); // No Content if too old
+    }
+
+    res.json(latest);
   } catch (err) {
     console.error("❌ Latest fetch error:", err);
     res.status(500).json({ error: 'Failed to fetch latest reading' });
   }
 });
+
 
 // 🔎 Debug: confirm running schema includes volt fields
 router.get('/debug/schema', (_req, res) => {
