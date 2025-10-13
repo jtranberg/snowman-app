@@ -1,19 +1,19 @@
 import mongoose from 'mongoose';
 
 const SensorSchema = new mongoose.Schema({
-  // existing temperature readings
-  alpha: Number,   // intake
-  bravo: Number,   // postCryo
-  charlie: Number, // cellA
-  delta: Number,   // cellB
-  echo: Number,    // cellC
+  // existing temperature sensors
+  alpha: Number,
+  bravo: Number,
+  charlie: Number,
+  delta: Number,
+  echo: Number,
 
-  // new voltage readings from each stage
+  // NEW voltage readings
   voltA: Number,
   voltB: Number,
   voltC: Number,
 
-  // optional state info from the ESP32 (“ACTIVE”, “IDLE”, “FAULT”)
+  // optional: state of the electrochem module (ACTIVE/IDLE/FAULT)
   state: {
     type: String,
     default: "IDLE",
@@ -25,5 +25,7 @@ const SensorSchema = new mongoose.Schema({
   },
 });
 
+// keep the same model name so other code still works
 const SensorReading = mongoose.model('SensorReading', SensorSchema);
+
 export default SensorReading;

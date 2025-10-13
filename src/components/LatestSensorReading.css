@@ -58,3 +58,20 @@
   margin-bottom: 0.5rem !important;
 }
 
+/* optional spacing before voltages row */
+.mt-voltages { margin-top: 12px; }
+
+/* reuse your sensor-card visuals; these tweak typography */
+.voltage-card .value-large {
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.2px;
+}
+
+.unit-caption {
+  font-size: 0.75rem;
+  opacity: 0.65;
+  margin-top: 2px;
+}
+
