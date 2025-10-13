@@ -74,4 +74,12 @@
   opacity: 0.65;
   margin-top: 2px;
 }
+.runtime-card .value-large {
+  letter-spacing: 0.5px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+.small-button {
+  font-size: .8rem;
+  padding: 6px 10px;
+}
 
