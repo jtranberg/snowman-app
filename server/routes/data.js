@@ -1,6 +1,7 @@
 // server/routes/data.js
 import express from 'express';
 import SensorReading from '../models/SensorReading.js';
+import RuntimeStat from '../models/RuntimeStat.js'; // 👈 NEW
 
 const router = express.Router();
 
@@ -29,6 +30,16 @@ const toVolt = (v) => {
   const n = toNum(v);
   return (n !== undefined && n >= 8 && n <= 16) ? n : undefined; // tweak bounds if needed
 };
+
+// helper: clamp/format ms -> HH:MM:SS
+function msToHms(ms) {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${pad(h)}:${pad(m)}:${pad(s)}`;
+}
 
 // If body arrived as a raw string (e.g. text/plain), try to JSON.parse it.
 // (Global app.use(express.json()) should handle application/json already.)
@@ -86,20 +97,42 @@ router.post('/', async (req, res) => {
       console.log('⚡ VOLT FIELDS PARSED:', { voltA, voltB, voltC });
     }
 
-    const state = typeof req.body.state === 'string' ? req.body.state : undefined;
+    const state = typeof req.body.state === 'string' ? req.body.state : 'IDLE';
+
     // Use server time to avoid stale client timestamps
-    const timestamp = new Date();
+    const now = new Date();
 
     const reading = new SensorReading({
       alpha, bravo, charlie, delta, echo,
       voltA, voltB, voltC,
       state,
-      timestamp,
+      timestamp: now,
     });
 
     await reading.save();
     console.log('✅ Saved new reading:', reading._id);
-    res.status(201).json({ success: true });
+
+    // === Runtime accumulator ===
+    let stat = await RuntimeStat.findOne();
+    if (!stat) {
+      stat = new RuntimeStat({ totalOnMs: 0, lastState: state, lastTs: now });
+    } else {
+      const lastTs = stat.lastTs || now;
+      const deltaMs = Math.max(0, now - lastTs);
+      if (stat.lastState === 'ACTIVE') {
+        stat.totalOnMs += deltaMs;
+      }
+      stat.lastState = state;
+      stat.lastTs = now;
+    }
+    await stat.save();
+
+    res.status(201).json({
+      success: true,
+      totalOnMs: stat.totalOnMs,
+      totalOnHours: +(stat.totalOnMs / 3600000).toFixed(3),
+      totalOnHms: msToHms(stat.totalOnMs),
+    });
   } catch (err) {
     console.error('❌ Save error:', err);
     res.status(500).json({ error: 'Failed to save reading', detail: String(err) });
@@ -134,7 +167,7 @@ router.get('/latest', async (_req, res) => {
   }
 });
 
-// ✅ GET /api/data/recent?limit=3 — last N docs (new)
+// ✅ GET /api/data/recent?limit=3 — last N docs
 router.get('/recent', async (req, res) => {
   try {
     const limit = Math.max(1, Math.min(50, Number(req.query.limit || 5)));
@@ -144,6 +177,35 @@ router.get('/recent', async (req, res) => {
     console.error('❌ Recent fetch error:', err);
     res.status(500).json({ error: 'Failed to fetch recent readings' });
   }
+});
+
+// ✅ GET /api/data/runtime — current cumulative ON time
+router.get('/runtime', async (_req, res) => {
+  try {
+    const stat = await RuntimeStat.findOne();
+    if (!stat) return res.json({ totalOnMs: 0, totalOnHours: 0, totalOnHms: "00:00:00" });
+    res.json({
+      totalOnMs: stat.totalOnMs,
+      totalOnHours: +(stat.totalOnMs / 3600000).toFixed(3),
+      totalOnHms: msToHms(stat.totalOnMs),
+      lastState: stat.lastState,
+      lastTs: stat.lastTs,
+    });
+  } catch (err) {
+    console.error('❌ Runtime read error:', err);
+    res.status(500).json({ error: 'Failed to read runtime' });
+  }
+});
+
+
+// (Optional) POST /api/data/runtime/reset — zero the counter
+router.post('/runtime/reset', async (_req, res) => {
+  let stat = await RuntimeStat.findOne();
+  if (!stat) stat = new RuntimeStat();
+  stat.totalOnMs = 0;
+  stat.lastTs = new Date();
+  await stat.save();
+  res.json({ success: true, totalOnMs: 0, totalOnHms: "00:00:00" });
 });
 
 // 🔎 Debug: confirm running schema includes volt fields

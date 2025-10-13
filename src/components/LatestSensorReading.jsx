@@ -3,6 +3,7 @@ import "./LatestSensorReading.css";
 
 const API = import.meta.env.VITE_API_URL || "";
 
+// format numbers or show dash
 function fmt(v, d = 2) {
   if (v == null || Number.isNaN(Number(v))) return "—";
   return Number(v).toFixed(d);
@@ -12,7 +13,18 @@ function fmt(v, d = 2) {
 function cleanVolt(v) {
   if (v == null) return null;
   const n = Number(v);
-  return Number.isFinite(n) && n >= 8 && n <= 16 ? n : null; // adjust bounds if needed
+  return Number.isFinite(n) && n >= 8 && n <= 16 ? n : null;
+}
+
+// HH:MM:SS
+function msToHms(ms) {
+  if (!Number.isFinite(ms) || ms < 0) ms = 0;
+  const total = Math.floor(ms / 1000);
+  const h = Math.floor(total / 3600);
+  const m = Math.floor((total % 3600) / 60);
+  const s = total % 60;
+  const pad = (x) => String(x).padStart(2, "0");
+  return `${pad(h)}:${pad(m)}:${pad(s)}`;
 }
 
 // SAFE fetch: handles empty bodies too
@@ -22,7 +34,7 @@ async function fetchJson(url, init) {
   if (!res.ok) {
     throw new Error(`${res.status} ${res.statusText}${text ? ` — ${text}` : ""}`);
   }
-  if (!text) return null; // tolerate empty body
+  if (!text) return null;
   try {
     return JSON.parse(text);
   } catch {
@@ -35,12 +47,38 @@ export default function LatestSensorReading() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [auto, setAuto] = useState(false);
+  const [runtime, setRuntime] = useState(null); // { totalOnMs, lastState, lastTs }
+
+  // replaces tick/liveRef; updates every 10s for age/runtime UI
+  const [nowMs, setNowMs] = useState(Date.now());
   const timerRef = useRef(null);
+
+  // simple 10s ticker for age/runtime display
+  useEffect(() => {
+    const id = setInterval(() => setNowMs(Date.now()), 10_000);
+    return () => clearInterval(id);
+  }, []);
 
   const ageSec = useMemo(() => {
     if (!reading?.timestamp) return null;
-    return Math.max(0, Math.round((Date.now() - new Date(reading.timestamp).getTime()) / 1000));
-  }, [reading?.timestamp]);
+    return Math.max(
+      0,
+      Math.round((nowMs - new Date(reading.timestamp).getTime()) / 1000)
+    );
+  }, [reading?.timestamp, nowMs]);
+
+  // derived live runtime display (updated every 10s)
+  const runtimeDisplay = useMemo(() => {
+    if (!runtime) return "—";
+    const base = Number(runtime.totalOnMs) || 0;
+    const isActive = (reading?.state || runtime.lastState) === "ACTIVE";
+    let extra = 0;
+    if (isActive && runtime.lastTs) {
+      extra = nowMs - new Date(runtime.lastTs).getTime();
+      if (!Number.isFinite(extra) || extra < 0) extra = 0;
+    }
+    return msToHms(base + extra);
+  }, [runtime, reading?.state, nowMs]);
 
   const fetchOnce = async () => {
     try {
@@ -48,17 +86,17 @@ export default function LatestSensorReading() {
       setErrorMsg("");
       console.log("📡 API base:", API || "(same origin)");
 
-      // 1) Ask backend to request a fresh device publish (ignore failures gracefully)
+      // Ask backend to request a fresh device publish (ignore failures)
       try {
         await fetchJson(`${API}/api/data/request-data`, { method: "POST" });
       } catch (e) {
         console.warn("request-data failed (continuing to fetch latest):", e?.message);
       }
 
-      // 2) Give the device a moment to send (tune if needed)
+      // Give the device a moment to send
       await new Promise((r) => setTimeout(r, 2500));
 
-      // 3) Fetch latest WITHOUT freshness filter, so we always get JSON
+      // Latest reading
       const data = await fetchJson(`${API}/api/data/latest`);
       if (!data) {
         setErrorMsg("No data returned from server.");
@@ -72,7 +110,6 @@ export default function LatestSensorReading() {
         delta: data.delta ?? data.cellB ?? null,
         echo: data.echo ?? data.cellC ?? null,
 
-        // only show plausible voltages; otherwise null → "—"
         voltA: cleanVolt(data.voltA),
         voltB: cleanVolt(data.voltB),
         voltC: cleanVolt(data.voltC),
@@ -80,9 +117,16 @@ export default function LatestSensorReading() {
         timestamp: data.timestamp ?? data.updatedAt ?? null,
         state: data.state ?? "IDLE",
       };
-
       setReading(normalized);
       console.log("✅ Latest Reading:", normalized);
+
+      // Runtime
+      try {
+        const rt = await fetchJson(`${API}/api/data/runtime`);
+        setRuntime(rt || null);
+      } catch (e) {
+        console.warn("runtime fetch failed:", e?.message);
+      }
     } catch (e) {
       console.error("❌ Fetch error:", e);
       setErrorMsg(e.message || "Unexpected error.");
@@ -91,7 +135,7 @@ export default function LatestSensorReading() {
     }
   };
 
-  // Optional auto-refresh every 5s
+  // Optional auto-refresh every 10s
   useEffect(() => {
     if (!auto) {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -99,12 +143,11 @@ export default function LatestSensorReading() {
       return;
     }
     fetchOnce(); // run immediately when toggled on
-    timerRef.current = setInterval(fetchOnce, 5000);
+    timerRef.current = setInterval(fetchOnce, 10_000);
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
       timerRef.current = null;
     };
-  
   }, [auto]);
 
   return (
@@ -118,19 +161,31 @@ export default function LatestSensorReading() {
 
       <div
         className="toolbar"
-        style={{ display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap", marginBottom: 8 }}
+        style={{
+          display: "flex",
+          gap: 10,
+          alignItems: "center",
+          flexWrap: "wrap",
+          marginBottom: 8,
+        }}
       >
         <button onClick={fetchOnce} className="refresh-button" disabled={loading}>
           {loading ? "⏳ Loading..." : "🔄 Refresh"}
         </button>
         <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <input type="checkbox" checked={auto} onChange={(e) => setAuto(e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={auto}
+            onChange={(e) => setAuto(e.target.checked)}
+          />
           Auto refresh
         </label>
         <span style={{ fontSize: ".85rem", opacity: 0.8 }}>
           State: <strong>{reading?.state || "—"}</strong>
           {" • "}
           Last update: <strong>{ageSec == null ? "—" : `${ageSec}s ago`}</strong>
+          {" • "}
+          On-time: <strong>{runtimeDisplay}</strong>
         </span>
       </div>
 
@@ -148,7 +203,11 @@ export default function LatestSensorReading() {
             ))}
             <div className="sensor-card timestamp-card">
               <h3>Time</h3>
-              <p>{reading.timestamp ? new Date(reading.timestamp).toLocaleString() : "—"}</p>
+              <p>
+                {reading.timestamp
+                  ? new Date(reading.timestamp).toLocaleString()
+                  : "—"}
+              </p>
             </div>
           </div>
 
