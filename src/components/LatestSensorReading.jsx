@@ -168,7 +168,7 @@ export default function LatestSensorReading() {
   return (
     <div className="simulation-panel">
       <h2>
-        Sensor Reading{" "}
+        Sensor Readings{" "}
         
       </h2>
 
@@ -232,17 +232,17 @@ export default function LatestSensorReading() {
           {/* Voltages */}
           <div className="cards-container mt-voltages">
             <div className="sensor-card voltage-card">
-              <h3>Stage A Voltage</h3>
+              <h3>Capture Assist A Volt</h3>
               <p className="value-large">{fmt(reading.voltA, 2)}</p>
               <div className="unit-caption">V</div>
             </div>
             <div className="sensor-card voltage-card">
-              <h3>Stage B Voltage</h3>
+              <h3>Capture Assist B Volt</h3>
               <p className="value-large">{fmt(reading.voltB, 2)}</p>
               <div className="unit-caption">V</div>
             </div>
             <div className="sensor-card voltage-card">
-              <h3>Stage C Voltage</h3>
+              <h3>Capture Assist C Volt</h3>
               <p className="value-large">{fmt(reading.voltC, 2)}</p>
               <div className="unit-caption">V</div>
             </div>
@@ -254,7 +254,7 @@ export default function LatestSensorReading() {
       {/* Total On-Time */}
       <div className="cards-container mt-voltages">
         <div className="sensor-card runtime-card">
-          <h3>Total Run Time</h3>
+          <h2>Total Run Time</h2>
           <p className="value-large">{runtimeDisplay}</p>
           <div className="unit-caption">HH:MM:SS</div>
 
