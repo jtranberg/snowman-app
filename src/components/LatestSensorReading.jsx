@@ -254,7 +254,7 @@ export default function LatestSensorReading() {
       {/* Total On-Time */}
       <div className="cards-container mt-voltages">
         <div className="sensor-card runtime-card">
-          <h2>Total Run Time</h2>
+          <h3>Total Run Time</h3>
           <p className="value-large">{runtimeDisplay}</p>
           <div className="unit-caption">HH:MM:SS</div>
 
