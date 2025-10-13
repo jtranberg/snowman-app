@@ -255,19 +255,23 @@ export default function LatestSensorReading() {
       )}
       {/* Total On-Time */}
       <div className="cards-container mt-voltages">
-  <div className="sensor-card runtime-card">
-    <h3>Total On-Time</h3>
-    <p className="value-large">{runtimeDisplay}</p>
-    <div className="unit-caption">HH:MM:SS</div>
+        <div className="sensor-card runtime-card">
+          <h3>Total Run Time</h3>
+          <p className="value-large">{runtimeDisplay}</p>
+          <div className="unit-caption">HH:MM:SS</div>
 
-    <div style={{ marginTop: 8, display: "flex", gap: 8, alignItems: "center" }}>
-      <span style={{ fontSize: ".85rem", opacity: 0.75 }}>
-        State: <strong>{(reading?.state || runtime?.lastState) ?? "—"}</strong>
-      </span>
-    </div>
-  </div>
-</div>
-
+          <div
+            style={{
+              marginTop: 8,
+              display: "flex",
+              gap: 8,
+              alignItems: "center",
+            }}
+          >
+           
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
