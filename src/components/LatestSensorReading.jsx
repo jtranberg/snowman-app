@@ -8,12 +8,18 @@ function fmt(v, d = 2) {
   return Number(v).toFixed(d);
 }
 
+// Accept only plausible ~12V rail values; others render as "—"
+function cleanVolt(v) {
+  if (v == null) return null;
+  const n = Number(v);
+  return Number.isFinite(n) && n >= 8 && n <= 16 ? n : null; // adjust bounds if needed
+}
+
 // SAFE fetch: handles empty bodies too
 async function fetchJson(url, init) {
   const res = await fetch(url, { cache: "no-store", ...init });
   const text = await res.text().catch(() => "");
   if (!res.ok) {
-    // 204 (No Content) would not be ok here — but we won't use freshness anymore
     throw new Error(`${res.status} ${res.statusText}${text ? ` — ${text}` : ""}`);
   }
   if (!text) return null; // tolerate empty body
@@ -65,9 +71,12 @@ export default function LatestSensorReading() {
         charlie: data.charlie ?? data.cellA ?? null,
         delta: data.delta ?? data.cellB ?? null,
         echo: data.echo ?? data.cellC ?? null,
-        voltA: data.voltA ?? null,
-        voltB: data.voltB ?? null,
-        voltC: data.voltC ?? null,
+
+        // only show plausible voltages; otherwise null → "—"
+        voltA: cleanVolt(data.voltA),
+        voltB: cleanVolt(data.voltB),
+        voltC: cleanVolt(data.voltC),
+
         timestamp: data.timestamp ?? data.updatedAt ?? null,
         state: data.state ?? "IDLE",
       };
@@ -95,7 +104,7 @@ export default function LatestSensorReading() {
       if (timerRef.current) clearInterval(timerRef.current);
       timerRef.current = null;
     };
-   
+  
   }, [auto]);
 
   return (
