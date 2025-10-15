@@ -27,7 +27,22 @@ function msToHms(ms) {
   return `${pad(h)}:${pad(m)}:${pad(s)}`;
 }
 
-// SAFE fetch: handles empty bodies too
+// ---------- NEW: robust “active” derivation ----------
+const ACTIVE_VOLT_MIN = 9.5;   // consider ON if any rail >= this
+const FRESH_MS = 60_000;       // reading must be newer than this
+
+function isFresh(ageSec) {
+  if (ageSec == null) return false;
+  return ageSec * 1000 <= FRESH_MS;
+}
+
+function anyActiveVolt(reading) {
+  if (!reading) return false;
+  const rails = [reading.voltA, reading.voltB, reading.voltC];
+  return rails.some((v) => Number.isFinite(v) && v >= ACTIVE_VOLT_MIN);
+}
+// ----------------------------------------------------
+
 async function fetchJson(url, init) {
   const res = await fetch(url, { cache: "no-store", ...init });
   const text = await res.text().catch(() => "");
@@ -69,18 +84,26 @@ export default function LatestSensorReading() {
     );
   }, [reading?.timestamp, nowMs]);
 
-  // derived live runtime display (updated every 10s)
+  // ---------- UPDATED: runtime only accrues if fresh + active ----------
   const runtimeDisplay = useMemo(() => {
     if (!runtime) return "—";
     const base = Number(runtime.totalOnMs) || 0;
-    const isActive = (reading?.state || runtime.lastState) === "ACTIVE";
+
+    const fresh = isFresh(ageSec);
+    const serverActive = (reading?.state || runtime.lastState) === "ACTIVE";
+    const voltsActive = anyActiveVolt(reading);
+    const isActiveNow = fresh && (serverActive || voltsActive);
+
     let extra = 0;
-    if (isActive && runtime.lastTs) {
+    if (isActiveNow && runtime.lastTs) {
       extra = nowMs - new Date(runtime.lastTs).getTime();
       if (!Number.isFinite(extra) || extra < 0) extra = 0;
     }
     return msToHms(base + extra);
-  }, [runtime, reading?.state, nowMs]);
+}, [runtime, reading, nowMs, ageSec]);
+
+
+  // --------------------------------------------------------------------
 
   const fetchOnce = async () => {
     try {
@@ -165,11 +188,18 @@ export default function LatestSensorReading() {
   //   }
   // };
 
+  // Derived UI state label that matches the new logic
+  const derivedState = useMemo(() => {
+  if (!isFresh(ageSec)) return "IDLE";
+  return (reading?.state === "ACTIVE" || anyActiveVolt(reading))
+    ? "ACTIVE"
+    : "IDLE";
+}, [ageSec, reading]);
+
   return (
     <div className="simulation-panel">
       <h2>
         Sensor Readings{" "}
-        
       </h2>
 
       <div
@@ -198,7 +228,7 @@ export default function LatestSensorReading() {
           Auto refresh
         </label>
         <span style={{ fontSize: ".85rem", opacity: 0.8 }}>
-          State: <strong>{reading?.state || "—"}</strong>
+          State: <strong>{derivedState}</strong>
           {" • "}
           Last update:{" "}
           <strong>{ageSec == null ? "—" : `${ageSec}s ago`}</strong>
@@ -232,17 +262,17 @@ export default function LatestSensorReading() {
           {/* Voltages */}
           <div className="cards-container mt-voltages">
             <div className="sensor-card voltage-card">
-              <h3>Capture Assist <br></br>A Volt</h3>
+              <h3>Capture Assist <br/>A Volt</h3>
               <p className="value-large">{fmt(reading.voltA, 2)}</p>
               <div className="unit-caption">V</div>
             </div>
             <div className="sensor-card voltage-card">
-              <h3>Capture Assist <br></br>B Volt</h3>
+              <h3>Capture Assist <br/>B Volt</h3>
               <p className="value-large">{fmt(reading.voltB, 2)}</p>
               <div className="unit-caption">V</div>
             </div>
             <div className="sensor-card voltage-card">
-              <h3>Capture Assist <br></br>C Volt</h3>
+              <h3>Capture Assist <br/>C Volt</h3>
               <p className="value-large">{fmt(reading.voltC, 2)}</p>
               <div className="unit-caption">V</div>
             </div>
@@ -251,23 +281,13 @@ export default function LatestSensorReading() {
       ) : (
         <p>No data available. Click refresh to trigger ESP32.</p>
       )}
+
       {/* Total On-Time */}
       <div className="cards-container mt-voltages">
         <div className="sensor-card runtime-card">
           <h3>Total Run Time</h3>
           <p className="value-large">{runtimeDisplay}</p>
           <div className="unit-caption">HH:MM:SS</div>
-
-          <div
-            style={{
-              marginTop: 8,
-              display: "flex",
-              gap: 8,
-              alignItems: "center",
-            }}
-          >
-           
-          </div>
         </div>
       </div>
     </div>
