@@ -84,24 +84,25 @@ export default function LatestSensorReading() {
     );
   }, [reading?.timestamp, nowMs]);
 
-  // ---------- UPDATED: runtime only accrues if fresh + active ----------
-  const runtimeDisplay = useMemo(() => {
-    if (!runtime) return "—";
-    const base = Number(runtime.totalOnMs) || 0;
+  // ---------- RUNTIME: only accrues with SERVER ACTIVE + fresh ----------
+ const runtimeDisplay = useMemo(() => {
+  if (!runtime) return "—";
+  const base = Number(runtime.totalOnMs) || 0;
 
-    const fresh = isFresh(ageSec);
-    const serverActive = (reading?.state || runtime.lastState) === "ACTIVE";
-    const voltsActive = anyActiveVolt(reading);
-    const isActiveNow = fresh && (serverActive || voltsActive);
+  const fresh = isFresh(ageSec);
+  const serverActive =
+    (reading?.state === "ACTIVE") || (runtime.lastState === "ACTIVE");
 
-    let extra = 0;
-    if (isActiveNow && runtime.lastTs) {
-      extra = nowMs - new Date(runtime.lastTs).getTime();
-      if (!Number.isFinite(extra) || extra < 0) extra = 0;
-    }
-    return msToHms(base + extra);
-}, [runtime, reading, nowMs, ageSec]);
+  const isActiveNow = fresh && serverActive;
 
+  let extra = 0;
+  if (isActiveNow && runtime.lastTs) {
+    extra = nowMs - new Date(runtime.lastTs).getTime();
+    if (!Number.isFinite(extra) || extra < 0) extra = 0;
+  }
+  return msToHms(base + extra);
+  // ✅ Only re-run when these primitives actually change
+}, [runtime, reading?.state, nowMs, ageSec]);
 
   // --------------------------------------------------------------------
 
@@ -178,29 +179,17 @@ export default function LatestSensorReading() {
     };
   }, [auto]);
 
-  //   const resetRuntime = async () => {
-  //   try {
-  //     await fetch(`${API}/api/data/runtime/reset`, { method: "POST" });
-  //     const rt = await fetchJson(`${API}/api/data/runtime`);
-  //     setRuntime(rt || { totalOnMs: 0, lastState: "IDLE", lastTs: null });
-  //   } catch (e) {
-  //     console.warn("runtime reset failed:", e?.message);
-  //   }
-  // };
-
-  // Derived UI state label that matches the new logic
+  // Derived UI state label (can still consider volts for display only)
   const derivedState = useMemo(() => {
-  if (!isFresh(ageSec)) return "IDLE";
-  return (reading?.state === "ACTIVE" || anyActiveVolt(reading))
-    ? "ACTIVE"
-    : "IDLE";
-}, [ageSec, reading]);
+    if (!isFresh(ageSec)) return "IDLE";
+    return (reading?.state === "ACTIVE" || anyActiveVolt(reading))
+      ? "ACTIVE"
+      : "IDLE";
+  }, [ageSec, reading]);
 
   return (
     <div className="simulation-panel">
-      <h2>
-        Sensor Readings{" "}
-      </h2>
+      <h2>Sensor Readings{" "}</h2>
 
       <div
         className="toolbar"
