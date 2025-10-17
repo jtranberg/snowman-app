@@ -27,9 +27,15 @@ function msToHms(ms) {
   return `${pad(h)}:${pad(m)}:${pad(s)}`;
 }
 
+// parse timestamps safely
+function tsMs(ts) {
+  const t = Date.parse(ts);
+  return Number.isFinite(t) ? t : null;
+}
+
 // ---------- ACTIVE detection ----------
-const ACTIVE_VOLT_MIN = 9.5;   // consider ON if any rail >= this
-const FRESH_MS = 60_000;       // reading must be newer than this
+const ACTIVE_VOLT_MIN = 9.5; // consider ON if any rail >= this
+const FRESH_MS = 60_000;     // reading must be newer than this
 
 function isFresh(ageSec) {
   if (ageSec == null) return false;
@@ -88,21 +94,54 @@ export default function LatestSensorReading() {
     return (reading?.state === "ACTIVE" || anyActiveVolt(reading)) ? "ACTIVE" : "IDLE";
   }, [ageSec, reading]);
 
-  // RUNTIME: only accrues with derived ACTIVE + fresh
+  // --- CLIENT-SIDE EDGE ANCHOR (these must be inside the component) ---
+  const wasActiveRef = useRef(false);
+  const activeAnchorRef = useRef(null); // rising-edge anchor
+
+  useEffect(() => {
+    const activeNow = derivedState === "ACTIVE" && isFresh(ageSec);
+    if (activeNow && !wasActiveRef.current) {
+      // rising edge → start local session anchor
+      activeAnchorRef.current = Date.now();
+    }
+    if (!activeNow && wasActiveRef.current) {
+      // falling edge → clear anchor
+      activeAnchorRef.current = null;
+    }
+    wasActiveRef.current = activeNow;
+  }, [derivedState, ageSec]);
+  // --------------------------------------------------------------------
+
+  // RUNTIME: accrue only when truly ACTIVE *now* with a trustworthy anchor
   const runtimeDisplay = useMemo(() => {
     if (!runtime) return "—";
+
     const base = Number(runtime.totalOnMs) || 0;
 
-    // Active NOW only if fresh + derived ACTIVE (no reliance on lastState)
-    const activeNow = derivedState === "ACTIVE";
+    const freshNow = isFresh(ageSec);
+    const serverSaysActive = runtime?.lastState === "ACTIVE";
+    // If backend doesn't send lastState, the "?? true" makes it permissive.
+    const activeNow = derivedState === "ACTIVE" && freshNow && (serverSaysActive ?? true);
+
+    if (!activeNow) return msToHms(base);
+
+    // Choose newest of: server lastTs, reading timestamp, client rising-edge
+    const anchors = [
+      tsMs(runtime?.lastTs),
+      tsMs(reading?.timestamp),
+      activeAnchorRef.current
+    ].filter((x) => Number.isFinite(x));
+
+    const anchor = anchors.length ? Math.max(...anchors) : null;
 
     let extra = 0;
-    if (activeNow && runtime.lastTs) {
-      extra = nowMs - new Date(runtime.lastTs).getTime();
+    if (anchor != null) {
+      extra = nowMs - anchor;
       if (!Number.isFinite(extra) || extra < 0) extra = 0;
     }
+
     return msToHms(base + extra);
-  }, [runtime, nowMs, derivedState]);
+  }, [runtime, nowMs, derivedState, ageSec, reading?.timestamp]);
 
   const fetchOnce = async () => {
     try {
