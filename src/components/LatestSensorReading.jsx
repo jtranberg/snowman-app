@@ -27,7 +27,7 @@ function msToHms(ms) {
   return `${pad(h)}:${pad(m)}:${pad(s)}`;
 }
 
-// ---------- NEW: robust “active” derivation ----------
+// ---------- ACTIVE detection ----------
 const ACTIVE_VOLT_MIN = 9.5;   // consider ON if any rail >= this
 const FRESH_MS = 60_000;       // reading must be newer than this
 
@@ -41,15 +41,13 @@ function anyActiveVolt(reading) {
   const rails = [reading.voltA, reading.voltB, reading.voltC];
   return rails.some((v) => Number.isFinite(v) && v >= ACTIVE_VOLT_MIN);
 }
-// ----------------------------------------------------
+// -------------------------------------
 
 async function fetchJson(url, init) {
   const res = await fetch(url, { cache: "no-store", ...init });
   const text = await res.text().catch(() => "");
   if (!res.ok) {
-    throw new Error(
-      `${res.status} ${res.statusText}${text ? ` — ${text}` : ""}`
-    );
+    throw new Error(`${res.status} ${res.statusText}${text ? ` — ${text}` : ""}`);
   }
   if (!text) return null;
   try {
@@ -64,13 +62,13 @@ export default function LatestSensorReading() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [auto, setAuto] = useState(false);
-  const [runtime, setRuntime] = useState(null); // { totalOnMs, lastState, lastTs }
+  // runtime: { totalOnMs, lastState, lastTs } from server
+  const [runtime, setRuntime] = useState(null);
 
-  // replaces tick/liveRef; updates every 10s for age/runtime UI
+  // 10s ticker for age/runtime UI
   const [nowMs, setNowMs] = useState(Date.now());
   const timerRef = useRef(null);
 
-  // simple 10s ticker for age/runtime display
   useEffect(() => {
     const id = setInterval(() => setNowMs(Date.now()), 10_000);
     return () => clearInterval(id);
@@ -84,27 +82,27 @@ export default function LatestSensorReading() {
     );
   }, [reading?.timestamp, nowMs]);
 
-  // ---------- RUNTIME: only accrues with SERVER ACTIVE + fresh ----------
- const runtimeDisplay = useMemo(() => {
-  if (!runtime) return "—";
-  const base = Number(runtime.totalOnMs) || 0;
+  // Unified derived state used by BOTH the label and runtime accrual
+  const derivedState = useMemo(() => {
+    if (!isFresh(ageSec)) return "IDLE";
+    return (reading?.state === "ACTIVE" || anyActiveVolt(reading)) ? "ACTIVE" : "IDLE";
+  }, [ageSec, reading]);
 
-  const fresh = isFresh(ageSec);
-  const serverActive =
-    (reading?.state === "ACTIVE") || (runtime.lastState === "ACTIVE");
+  // RUNTIME: only accrues with derived ACTIVE + fresh
+  const runtimeDisplay = useMemo(() => {
+    if (!runtime) return "—";
+    const base = Number(runtime.totalOnMs) || 0;
 
-  const isActiveNow = fresh && serverActive;
+    // Active NOW only if fresh + derived ACTIVE (no reliance on lastState)
+    const activeNow = derivedState === "ACTIVE";
 
-  let extra = 0;
-  if (isActiveNow && runtime.lastTs) {
-    extra = nowMs - new Date(runtime.lastTs).getTime();
-    if (!Number.isFinite(extra) || extra < 0) extra = 0;
-  }
-  return msToHms(base + extra);
-  // ✅ Only re-run when these primitives actually change
-}, [runtime, reading?.state, nowMs, ageSec]);
-
-  // --------------------------------------------------------------------
+    let extra = 0;
+    if (activeNow && runtime.lastTs) {
+      extra = nowMs - new Date(runtime.lastTs).getTime();
+      if (!Number.isFinite(extra) || extra < 0) extra = 0;
+    }
+    return msToHms(base + extra);
+  }, [runtime, nowMs, derivedState]);
 
   const fetchOnce = async () => {
     try {
@@ -116,10 +114,7 @@ export default function LatestSensorReading() {
       try {
         await fetchJson(`${API}/api/data/request-data`, { method: "POST" });
       } catch (e) {
-        console.warn(
-          "request-data failed (continuing to fetch latest):",
-          e?.message
-        );
+        console.warn("request-data failed (continuing to fetch latest):", e?.message);
       }
 
       // Give the device a moment to send
@@ -178,14 +173,6 @@ export default function LatestSensorReading() {
       timerRef.current = null;
     };
   }, [auto]);
-
-  // Derived UI state label (can still consider volts for display only)
-  const derivedState = useMemo(() => {
-    if (!isFresh(ageSec)) return "IDLE";
-    return (reading?.state === "ACTIVE" || anyActiveVolt(reading))
-      ? "ACTIVE"
-      : "IDLE";
-  }, [ageSec, reading]);
 
   return (
     <div className="simulation-panel">
