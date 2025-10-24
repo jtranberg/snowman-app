@@ -1,29 +1,42 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const SensorSchema = new mongoose.Schema({
-  // existing temperature readings
-  alpha: Number,   // intake
-  bravo: Number,   // postCryo
-  charlie: Number, // cellA
-  delta: Number,   // cellB
-  echo: Number,    // cellC
+const SensorSchema = new mongoose.Schema(
+  {
+    // === Temperature readings ===
+    alpha: Number,   // intake
+    bravo: Number,   // postCryo
+    charlie: Number, // cellA
+    delta: Number,   // cellB
+    echo: Number,    // cellC
 
-  // new voltage readings from each stage
-  voltA: Number,
-  voltB: Number,
-  voltC: Number,
+    // === Voltage readings from each stage ===
+    voltA: Number,
+    voltB: Number,
+    voltC: Number,
 
-  // optional state info from the ESP32 (“ACTIVE”, “IDLE”, “FAULT”)
-  state: {
-    type: String,
-    default: "IDLE",
+    // === Runtime tracking (added for total IoT runtime) ===
+    runtime_total_ms: {
+      type: Number,
+      default: 0,
+    },
+    runtime_total_h: Number,
+    runtime_total_min: Number,
+    runtime_total_sec: Number,
+
+    // === Device state ===
+    state: {
+      type: String,
+      default: "IDLE",
+    },
+
+    // === Timestamp ===
+    timestamp: {
+      type: Date,
+      default: Date.now,
+    },
   },
+  { versionKey: false }
+);
 
-  timestamp: {
-    type: Date,
-    default: Date.now,
-  },
-});
-
-const SensorReading = mongoose.model('SensorReading', SensorSchema);
+const SensorReading = mongoose.model("SensorReading", SensorSchema);
 export default SensorReading;

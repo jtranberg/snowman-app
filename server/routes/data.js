@@ -1,11 +1,11 @@
 // server/routes/data.js
 import express from 'express';
 import SensorReading from '../models/SensorReading.js';
-import RuntimeStat from '../models/RuntimeStat.js'; // 👈 NEW
+import RuntimeStat from '../models/RuntimeStat.js';
 
 const router = express.Router();
 
-let dataRequested = false; // control flag (single-instance memory)
+let dataRequested = false; // single-instance handshake flag
 
 // ===== Debug: log every hit =====
 router.use((req, _res, next) => {
@@ -28,7 +28,7 @@ const toNum = (v) => {
 // Accept only plausible ~12 V rail values; ignore junk
 const toVolt = (v) => {
   const n = toNum(v);
-  return (n !== undefined && n >= 8 && n <= 16) ? n : undefined; // tweak bounds if needed
+  return (n !== undefined && n >= 8 && n <= 16) ? n : undefined;
 };
 
 // helper: clamp/format ms -> HH:MM:SS
@@ -42,7 +42,6 @@ function msToHms(ms) {
 }
 
 // If body arrived as a raw string (e.g. text/plain), try to JSON.parse it.
-// (Global app.use(express.json()) should handle application/json already.)
 router.use((req, _res, next) => {
   if (typeof req.body === 'string') {
     try {
@@ -73,7 +72,7 @@ router.get('/data-requested', (_req, res) => {
   res.send('false');
 });
 
-// ✅ POST /api/data — ESP32 sends reading
+// ✅ POST /api/data — ESP32 sends reading (now accepts runtime fields)
 router.post('/', async (req, res) => {
   try {
     console.log('🧪 Incoming req.body:', req.body);
@@ -86,25 +85,30 @@ router.post('/', async (req, res) => {
     const delta   = toNum(req.body.delta   !== undefined && req.body.delta   !== null ? req.body.delta   : req.body.cellB);
     const echo    = toNum(req.body.echo    !== undefined && req.body.echo    !== null ? req.body.echo    : req.body.cellC);
 
-    // Only store plausible 12V-ish values
+    // Only store plausible 12V-ish values (else null)
     const voltA = toVolt(req.body.voltA);
     const voltB = toVolt(req.body.voltB);
     const voltC = toVolt(req.body.voltC);
 
-    if (voltA === undefined && voltB === undefined && voltC === undefined) {
-      console.warn('⚠️ all volt fields missing/implausible. Check device payload & Content-Type.');
-    } else {
-      console.log('⚡ VOLT FIELDS PARSED:', { voltA, voltB, voltC });
-    }
-
     const state = typeof req.body.state === 'string' ? req.body.state : 'IDLE';
+    const now = new Date(); // server time
 
-    // Use server time to avoid stale client timestamps
-    const now = new Date();
+    // ===== Runtime fields from firmware (authoritative when present) =====
+    const fwRuntimeMs   = toNum(req.body.runtime_total_ms);
+    const fwRuntimeH    = toNum(req.body.runtime_total_h);
+    const fwRuntimeMin  = toNum(req.body.runtime_total_min);
+    const fwRuntimeSec  = toNum(req.body.runtime_total_sec);
 
     const reading = new SensorReading({
       alpha, bravo, charlie, delta, echo,
-      voltA, voltB, voltC,
+      voltA: voltA ?? null,
+      voltB: voltB ?? null,
+      voltC: voltC ?? null,
+      // Store runtime fields if provided; otherwise leave unset/null
+      runtime_total_ms:  Number.isFinite(fwRuntimeMs)  ? fwRuntimeMs  : undefined,
+      runtime_total_h:   Number.isFinite(fwRuntimeH)   ? fwRuntimeH   : undefined,
+      runtime_total_min: Number.isFinite(fwRuntimeMin) ? fwRuntimeMin : undefined,
+      runtime_total_sec: Number.isFinite(fwRuntimeSec) ? fwRuntimeSec : undefined,
       state,
       timestamp: now,
     });
@@ -112,10 +116,18 @@ router.post('/', async (req, res) => {
     await reading.save();
     console.log('✅ Saved new reading:', reading._id);
 
-    // === Runtime accumulator ===
+    // === RuntimeStat mirror ===
+    // If firmware provided runtime_total_ms, mirror it directly (authoritative).
+    // Otherwise, fall back to server-side accumulation (legacy behavior).
     let stat = await RuntimeStat.findOne();
     if (!stat) {
       stat = new RuntimeStat({ totalOnMs: 0, lastState: state, lastTs: now });
+    }
+
+    if (Number.isFinite(fwRuntimeMs)) {
+      stat.totalOnMs = Math.max(0, fwRuntimeMs);
+      stat.lastState = state;
+      stat.lastTs = now;
     } else {
       const lastTs = stat.lastTs || now;
       const deltaMs = Math.max(0, now - lastTs);
@@ -179,9 +191,25 @@ router.get('/recent', async (req, res) => {
   }
 });
 
-// ✅ GET /api/data/runtime — current cumulative ON time
+// ✅ GET /api/data/runtime — cumulative ON time
+// Prefers latest reading's firmware runtime; falls back to RuntimeStat.
 router.get('/runtime', async (_req, res) => {
   try {
+    const latest = await SensorReading.findOne().sort({ timestamp: -1 }).lean();
+    let totalOnMsFromReading =
+      latest && Number.isFinite(+latest.runtime_total_ms) ? +latest.runtime_total_ms : undefined;
+
+    if (totalOnMsFromReading !== undefined) {
+      return res.json({
+        totalOnMs: totalOnMsFromReading,
+        totalOnHours: +(totalOnMsFromReading / 3600000).toFixed(3),
+        totalOnHms: msToHms(totalOnMsFromReading),
+        lastState: latest?.state || 'IDLE',
+        lastTs: latest?.timestamp || null,
+      });
+    }
+
+    // Fallback: use accumulated server stat
     const stat = await RuntimeStat.findOne();
     if (!stat) return res.json({ totalOnMs: 0, totalOnHours: 0, totalOnHms: "00:00:00" });
     res.json({
@@ -197,8 +225,7 @@ router.get('/runtime', async (_req, res) => {
   }
 });
 
-
-// (Optional) POST /api/data/runtime/reset — zero the counter
+// (Optional) POST /api/data/runtime/reset — zero the counter (server-side mirror)
 router.post('/runtime/reset', async (_req, res) => {
   let stat = await RuntimeStat.findOne();
   if (!stat) stat = new RuntimeStat();
@@ -208,7 +235,7 @@ router.post('/runtime/reset', async (_req, res) => {
   res.json({ success: true, totalOnMs: 0, totalOnHms: "00:00:00" });
 });
 
-// 🔎 Debug: confirm running schema includes volt fields
+// 🔎 Debug: confirm running schema includes volt & runtime fields
 router.get('/debug/schema', (_req, res) => {
   res.json({ paths: Object.keys(SensorReading.schema.paths) });
 });
