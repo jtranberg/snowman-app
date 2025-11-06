@@ -31,6 +31,24 @@ const toVolt = (v) => {
   return (n !== undefined && n >= 8 && n <= 16) ? n : undefined;
 };
 
+// Accept realistic CO₂ ppm (0..10000)
+const toCO2 = (v) => {
+  const n = toNum(v);
+  return (n !== undefined && n >= 0 && n <= 10000) ? n : undefined;
+};
+
+// Accept °C in a reasonable indoor range (-20..80)
+const toDegC = (v) => {
+  const n = toNum(v);
+  return (n !== undefined && n >= -20 && n <= 80) ? n : undefined;
+};
+
+// Accept RH% (0..100)
+const toRH = (v) => {
+  const n = toNum(v);
+  return (n !== undefined && n >= 0 && n <= 100) ? n : undefined;
+};
+
 // helper: clamp/format ms -> HH:MM:SS
 function msToHms(ms) {
   const total = Math.max(0, Math.floor(ms / 1000));
@@ -72,7 +90,7 @@ router.get('/data-requested', (_req, res) => {
   res.send('false');
 });
 
-// ✅ POST /api/data — ESP32 sends reading (now accepts runtime fields)
+// ✅ POST /api/data — ESP32 sends reading (now accepts runtime + CO2/env fields)
 router.post('/', async (req, res) => {
   try {
     console.log('🧪 Incoming req.body:', req.body);
@@ -90,6 +108,11 @@ router.post('/', async (req, res) => {
     const voltB = toVolt(req.body.voltB);
     const voltC = toVolt(req.body.voltC);
 
+    // New: SCD30 fields (optional)
+    const co2ppm  = toCO2(req.body.co2ppm);
+    const scdTemp = toDegC(req.body.scdTemp);
+    const scdRH   = toRH(req.body.scdRH);
+
     const state = typeof req.body.state === 'string' ? req.body.state : 'IDLE';
     const now = new Date(); // server time
 
@@ -104,11 +127,18 @@ router.post('/', async (req, res) => {
       voltA: voltA ?? null,
       voltB: voltB ?? null,
       voltC: voltC ?? null,
-      // Store runtime fields if provided; otherwise leave unset/null
+
+      // New env fields
+      co2ppm:  co2ppm  ?? undefined,
+      scdTemp: scdTemp ?? undefined,
+      scdRH:   scdRH   ?? undefined,
+
+      // Runtime (firmware authoritative if present)
       runtime_total_ms:  Number.isFinite(fwRuntimeMs)  ? fwRuntimeMs  : undefined,
       runtime_total_h:   Number.isFinite(fwRuntimeH)   ? fwRuntimeH   : undefined,
       runtime_total_min: Number.isFinite(fwRuntimeMin) ? fwRuntimeMin : undefined,
       runtime_total_sec: Number.isFinite(fwRuntimeSec) ? fwRuntimeSec : undefined,
+
       state,
       timestamp: now,
     });
@@ -117,8 +147,6 @@ router.post('/', async (req, res) => {
     console.log('✅ Saved new reading:', reading._id);
 
     // === RuntimeStat mirror ===
-    // If firmware provided runtime_total_ms, mirror it directly (authoritative).
-    // Otherwise, fall back to server-side accumulation (legacy behavior).
     let stat = await RuntimeStat.findOne();
     if (!stat) {
       stat = new RuntimeStat({ totalOnMs: 0, lastState: state, lastTs: now });
@@ -179,6 +207,32 @@ router.get('/latest', async (_req, res) => {
   }
 });
 
+// ✅ GET /api/data/latest/env — compact env-only payload for UI widgets
+router.get('/latest/env', async (_req, res) => {
+  try {
+    const latest = await SensorReading.findOne().sort({ timestamp: -1 }).lean();
+    if (!latest) return res.status(404).json({ error: 'No sensor data found' });
+
+    const payload = {
+      co2ppm:  latest.co2ppm ?? null,
+      scdTemp: latest.scdTemp ?? null,
+      scdRH:   latest.scdRH ?? null,
+      timestamp: latest.timestamp || null,
+    };
+
+    // no-cache headers
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('Surrogate-Control', 'no-store');
+
+    res.json(payload);
+  } catch (err) {
+    console.error('❌ Latest env fetch error:', err);
+    res.status(500).json({ error: 'Failed to fetch latest env data' });
+  }
+});
+
 // ✅ GET /api/data/recent?limit=3 — last N docs
 router.get('/recent', async (req, res) => {
   try {
@@ -235,7 +289,7 @@ router.post('/runtime/reset', async (_req, res) => {
   res.json({ success: true, totalOnMs: 0, totalOnHms: "00:00:00" });
 });
 
-// 🔎 Debug: confirm running schema includes volt & runtime fields
+// 🔎 Debug: confirm running schema includes volt & runtime & env fields
 router.get('/debug/schema', (_req, res) => {
   res.json({ paths: Object.keys(SensorReading.schema.paths) });
 });

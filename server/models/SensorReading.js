@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const SensorSchema = new mongoose.Schema(
   {
-    // === Temperature readings ===
+    // === Temperature readings (DS18B20 array) ===
     alpha: Number,   // intake
     bravo: Number,   // postCryo
     charlie: Number, // cellA
@@ -14,7 +14,12 @@ const SensorSchema = new mongoose.Schema(
     voltB: Number,
     voltC: Number,
 
-    // === Runtime tracking (added for total IoT runtime) ===
+    // === CO2 / Environment readings (SCD30) ===
+    co2ppm: Number,      // CO₂ concentration in ppm
+    scdTemp: Number,     // SCD30 internal temperature (°C)
+    scdRH: Number,       // Relative humidity (%)
+
+    // === Runtime tracking ===
     runtime_total_ms: {
       type: Number,
       default: 0,

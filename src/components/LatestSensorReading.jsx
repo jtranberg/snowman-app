@@ -65,6 +65,7 @@ async function fetchJson(url, init) {
 
 export default function LatestSensorReading() {
   const [reading, setReading] = useState(null);
+  const [env, setEnv] = useState(null); // {co2ppm, scdTemp, scdRH, timestamp}
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [auto, setAuto] = useState(false);
@@ -120,7 +121,6 @@ export default function LatestSensorReading() {
 
     const freshNow = isFresh(ageSec);
     const serverSaysActive = runtime?.lastState === "ACTIVE";
-    // If backend doesn't send lastState, the "?? true" makes it permissive.
     const activeNow = derivedState === "ACTIVE" && freshNow && (serverSaysActive ?? true);
 
     if (!activeNow) return msToHms(base);
@@ -159,7 +159,7 @@ export default function LatestSensorReading() {
       // Give the device a moment to send
       await new Promise((r) => setTimeout(r, 2500));
 
-      // Latest reading
+      // Latest reading (full doc)
       const data = await fetchJson(`${API}/api/data/latest`);
       if (!data) {
         setErrorMsg("No data returned from server.");
@@ -182,6 +182,26 @@ export default function LatestSensorReading() {
       };
       setReading(normalized);
       console.log("✅ Latest Reading:", normalized);
+
+      // Env (use lightweight endpoint; fallback to /latest if needed)
+      try {
+        const envData =
+          (await fetchJson(`${API}/api/data/latest/env`)) ||
+          { co2ppm: data.co2ppm ?? null, scdTemp: data.scdTemp ?? null, scdRH: data.scdRH ?? null, timestamp: normalized.timestamp };
+        setEnv({
+          co2ppm: envData.co2ppm ?? (data.co2ppm ?? null),
+          scdTemp: envData.scdTemp ?? (data.scdTemp ?? null),
+          scdRH: envData.scdRH ?? (data.scdRH ?? null),
+          timestamp: envData.timestamp ?? normalized.timestamp,
+        });
+      } catch {
+        setEnv({
+          co2ppm: data.co2ppm ?? null,
+          scdTemp: data.scdTemp ?? null,
+          scdRH: data.scdRH ?? null,
+          timestamp: normalized.timestamp,
+        });
+      }
 
       // Runtime
       try {
@@ -254,6 +274,27 @@ export default function LatestSensorReading() {
 
       {errorMsg && <p className="error-text">⚠️ {errorMsg}</p>}
 
+      {/* --- Env row (CO2 big, Temp/RH badges) --- */}
+      <div className="cards-container">
+        <div className="sensor-card co2-card">
+          <h3>CO₂</h3>
+          <p className="value-large">{fmt(env?.co2ppm, 0)}</p>
+          <div className="unit-caption">ppm</div>
+          <div className="co2-subrow">
+            <span className="badge">T {fmt(env?.scdTemp, 2)}°C</span>
+            <span className="badge">RH {fmt(env?.scdRH, 1)}%</span>
+          </div>
+        </div>
+        <div className="sensor-card timestamp-card">
+          <h3>Time</h3>
+          <p>
+            {reading?.timestamp
+              ? new Date(reading.timestamp).toLocaleString()
+              : "—"}
+          </p>
+        </div>
+      </div>
+
       {reading ? (
         <>
           {/* Temperatures */}
@@ -264,14 +305,6 @@ export default function LatestSensorReading() {
                 <p>{fmt(reading[s], 1)}°C</p>
               </div>
             ))}
-            <div className="sensor-card timestamp-card">
-              <h3>Time</h3>
-              <p>
-                {reading.timestamp
-                  ? new Date(reading.timestamp).toLocaleString()
-                  : "—"}
-              </p>
-            </div>
           </div>
 
           {/* Voltages */}
