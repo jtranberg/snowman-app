@@ -35,7 +35,7 @@ function tsMs(ts) {
 
 // ---------- ACTIVE detection ----------
 const ACTIVE_VOLT_MIN = 9.5; // consider ON if any rail >= this
-const FRESH_MS = 60_000;     // reading must be newer than this
+const FRESH_MS = 60_000; // reading must be newer than this
 
 function isFresh(ageSec) {
   if (ageSec == null) return false;
@@ -53,7 +53,9 @@ async function fetchJson(url, init) {
   const res = await fetch(url, { cache: "no-store", ...init });
   const text = await res.text().catch(() => "");
   if (!res.ok) {
-    throw new Error(`${res.status} ${res.statusText}${text ? ` — ${text}` : ""}`);
+    throw new Error(
+      `${res.status} ${res.statusText}${text ? ` — ${text}` : ""}`
+    );
   }
   if (!text) return null;
   try {
@@ -92,7 +94,9 @@ export default function LatestSensorReading() {
   // Unified derived state used by BOTH the label and runtime accrual
   const derivedState = useMemo(() => {
     if (!isFresh(ageSec)) return "IDLE";
-    return (reading?.state === "ACTIVE" || anyActiveVolt(reading)) ? "ACTIVE" : "IDLE";
+    return reading?.state === "ACTIVE" || anyActiveVolt(reading)
+      ? "ACTIVE"
+      : "IDLE";
   }, [ageSec, reading]);
 
   // --- CLIENT-SIDE EDGE ANCHOR (these must be inside the component) ---
@@ -121,7 +125,8 @@ export default function LatestSensorReading() {
 
     const freshNow = isFresh(ageSec);
     const serverSaysActive = runtime?.lastState === "ACTIVE";
-    const activeNow = derivedState === "ACTIVE" && freshNow && (serverSaysActive ?? true);
+    const activeNow =
+      derivedState === "ACTIVE" && freshNow && (serverSaysActive ?? true);
 
     if (!activeNow) return msToHms(base);
 
@@ -129,7 +134,7 @@ export default function LatestSensorReading() {
     const anchors = [
       tsMs(runtime?.lastTs),
       tsMs(reading?.timestamp),
-      activeAnchorRef.current
+      activeAnchorRef.current,
     ].filter((x) => Number.isFinite(x));
 
     const anchor = anchors.length ? Math.max(...anchors) : null;
@@ -153,7 +158,10 @@ export default function LatestSensorReading() {
       try {
         await fetchJson(`${API}/api/data/request-data`, { method: "POST" });
       } catch (e) {
-        console.warn("request-data failed (continuing to fetch latest):", e?.message);
+        console.warn(
+          "request-data failed (continuing to fetch latest):",
+          e?.message
+        );
       }
 
       // Give the device a moment to send
@@ -177,6 +185,10 @@ export default function LatestSensorReading() {
         voltB: cleanVolt(data.voltB),
         voltC: cleanVolt(data.voltC),
 
+        co2ppm: data.co2ppm ?? null,
+        scdTemp: data.scdTemp ?? null,
+        scdRH: data.scdRH ?? null,
+
         timestamp: data.timestamp ?? data.updatedAt ?? null,
         state: data.state ?? "IDLE",
       };
@@ -185,13 +197,16 @@ export default function LatestSensorReading() {
 
       // Env (use lightweight endpoint; fallback to /latest if needed)
       try {
-        const envData =
-          (await fetchJson(`${API}/api/data/latest/env`)) ||
-          { co2ppm: data.co2ppm ?? null, scdTemp: data.scdTemp ?? null, scdRH: data.scdRH ?? null, timestamp: normalized.timestamp };
+        const envData = (await fetchJson(`${API}/api/data/latest/env`)) || {
+          co2ppm: data.co2ppm ?? null,
+          scdTemp: data.scdTemp ?? null,
+          scdRH: data.scdRH ?? null,
+          timestamp: normalized.timestamp,
+        };
         setEnv({
-          co2ppm: envData.co2ppm ?? (data.co2ppm ?? null),
-          scdTemp: envData.scdTemp ?? (data.scdTemp ?? null),
-          scdRH: envData.scdRH ?? (data.scdRH ?? null),
+          co2ppm: envData.co2ppm ?? data.co2ppm ?? null,
+          scdTemp: envData.scdTemp ?? data.scdTemp ?? null,
+          scdRH: envData.scdRH ?? data.scdRH ?? null,
           timestamp: envData.timestamp ?? normalized.timestamp,
         });
       } catch {
@@ -235,7 +250,7 @@ export default function LatestSensorReading() {
 
   return (
     <div className="simulation-panel">
-      <h2>Sensor Readings{" "}</h2>
+      <h2>Sensor Readings </h2>
 
       <div
         className="toolbar"
@@ -310,17 +325,23 @@ export default function LatestSensorReading() {
           {/* Voltages */}
           <div className="cards-container mt-voltages">
             <div className="sensor-card voltage-card">
-              <h3>Capture Assist <br/>A Volt</h3>
+              <h3>
+                Capture Assist <br />A Volt
+              </h3>
               <p className="value-large">{fmt(reading.voltA, 2)}</p>
               <div className="unit-caption">V</div>
             </div>
             <div className="sensor-card voltage-card">
-              <h3>Capture Assist <br/>B Volt</h3>
+              <h3>
+                Capture Assist <br />B Volt
+              </h3>
               <p className="value-large">{fmt(reading.voltB, 2)}</p>
               <div className="unit-caption">V</div>
             </div>
             <div className="sensor-card voltage-card">
-              <h3>Capture Assist <br/>C Volt</h3>
+              <h3>
+                Capture Assist <br />C Volt
+              </h3>
               <p className="value-large">{fmt(reading.voltC, 2)}</p>
               <div className="unit-caption">V</div>
             </div>

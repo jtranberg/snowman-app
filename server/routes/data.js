@@ -180,6 +180,7 @@ router.post('/', async (req, res) => {
 });
 
 // ✅ GET /api/data/latest — prefer docs with voltages, else fallback to any
+// ✅ GET /api/data/latest — prefer docs with voltages, else fallback to any
 router.get('/latest', async (_req, res) => {
   try {
     const withVolts = await SensorReading.findOne({
@@ -194,44 +195,64 @@ router.get('/latest', async (_req, res) => {
     const latest = withVolts || latestAny;
     if (!latest) return res.status(404).json({ error: 'No sensor data found' });
 
-    // no caching anywhere
+    // no-cache
     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
     res.set('Pragma', 'no-cache');
     res.set('Expires', '0');
     res.set('Surrogate-Control', 'no-store');
 
-    res.json(latest);
+    // 👇 normalize keys so env fields are always present
+    res.json({
+      alpha:   latest.alpha   ?? null,
+      bravo:   latest.bravo   ?? null,
+      charlie: latest.charlie ?? null,
+      delta:   latest.delta   ?? null,
+      echo:    latest.echo    ?? null,
+
+      voltA: latest.voltA ?? null,
+      voltB: latest.voltB ?? null,
+      voltC: latest.voltC ?? null,
+
+      co2ppm:  latest.co2ppm  ?? null,
+      scdTemp: latest.scdTemp ?? null,
+      scdRH:   latest.scdRH   ?? null,
+
+      state: latest.state ?? 'IDLE',
+      timestamp: latest.timestamp ?? null,
+      _id: latest._id,
+    });
   } catch (err) {
     console.error('❌ Latest fetch error:', err);
     res.status(500).json({ error: 'Failed to fetch latest reading' });
   }
 });
 
+
 // ✅ GET /api/data/latest/env — compact env-only payload for UI widgets
-router.get('/latest/env', async (_req, res) => {
-  try {
-    const latest = await SensorReading.findOne().sort({ timestamp: -1 }).lean();
-    if (!latest) return res.status(404).json({ error: 'No sensor data found' });
+// router.get('/latest/env', async (_req, res) => {
+//   try {
+//     const latest = await SensorReading.findOne().sort({ timestamp: -1 }).lean();
+//     if (!latest) return res.status(404).json({ error: 'No sensor data found' });
 
-    const payload = {
-      co2ppm:  latest.co2ppm ?? null,
-      scdTemp: latest.scdTemp ?? null,
-      scdRH:   latest.scdRH ?? null,
-      timestamp: latest.timestamp || null,
-    };
+//     const payload = {
+//       co2ppm:  latest.co2ppm ?? null,
+//       scdTemp: latest.scdTemp ?? null,
+//       scdRH:   latest.scdRH ?? null,
+//       timestamp: latest.timestamp || null,
+//     };
 
-    // no-cache headers
-    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.set('Pragma', 'no-cache');
-    res.set('Expires', '0');
-    res.set('Surrogate-Control', 'no-store');
+//     // no-cache headers
+//     res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+//     res.set('Pragma', 'no-cache');
+//     res.set('Expires', '0');
+//     res.set('Surrogate-Control', 'no-store');
 
-    res.json(payload);
-  } catch (err) {
-    console.error('❌ Latest env fetch error:', err);
-    res.status(500).json({ error: 'Failed to fetch latest env data' });
-  }
-});
+//     res.json(payload);
+//   } catch (err) {
+//     console.error('❌ Latest env fetch error:', err);
+//     res.status(500).json({ error: 'Failed to fetch latest env data' });
+//   }
+// });
 
 // ✅ GET /api/data/recent?limit=3 — last N docs
 router.get('/recent', async (req, res) => {
