@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import './WiFiSetupPanel.css';
+import '../components/WifiSetupPanel.css';
 
 export default function WiFiSetupPanel() {
   const [ssid, setSsid] = useState('');
