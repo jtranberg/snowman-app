@@ -1,0 +1,155 @@
+.wifi-setup-panel {
+  padding: 1.5rem;
+  border-radius: 20px;
+  max-width: 420px;
+  margin-top: 2rem;
+  color: #e2e8f0;
+  position: relative;
+  overflow: hidden;
+
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), transparent 35%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(10, 22, 40, 0.98));
+
+  border: 1px solid rgba(125, 211, 252, 0.14);
+
+  box-shadow:
+    0 0 20px rgba(56, 189, 248, 0.12),
+    inset 0 0 18px rgba(56, 189, 248, 0.04);
+}
+
+/* grid overlay */
+.wifi-setup-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+.wifi-setup-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* header */
+.wifi-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.wifi-panel-header h2 {
+  font-size: 1.1rem;
+  color: #38bdf8;
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.wifi-panel-badge {
+  font-size: 0.7rem;
+  padding: 3px 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(125, 211, 252, 0.2);
+  color: #7dd3fc;
+}
+
+/* description */
+.wifi-panel-copy {
+  font-size: 0.9rem;
+  color: #94a3b8;
+  margin-bottom: 1.2rem;
+  line-height: 1.5;
+}
+
+/* form */
+.wifi-form-group {
+  margin-bottom: 1rem;
+}
+
+.wifi-label {
+  font-size: 0.7rem;
+  color: #7dd3fc;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: 'Orbitron', sans-serif;
+}
+
+.wifi-input {
+  width: 100%;
+  padding: 0.75rem 0.85rem;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  background: rgba(15, 23, 42, 0.85);
+  color: #f8fafc;
+  margin-top: 0.3rem;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wifi-input::placeholder {
+  color: rgba(203, 213, 225, 0.45);
+}
+
+.wifi-input:focus {
+  border-color: rgba(56, 189, 248, 0.5);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
+}
+
+/* button */
+.wifi-send-button {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.8rem;
+  border-radius: 12px;
+  border: none;
+  font-weight: 800;
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #082032;
+  cursor: pointer;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.24);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wifi-send-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.32);
+}
+
+.wifi-send-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* status */
+.wifi-status {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+/* states */
+.wifi-status-success {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.wifi-status-error {
+  background: rgba(127, 29, 29, 0.25);
+  color: #fecaca;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+}
+
+.wifi-status-info {
+  background: rgba(56, 189, 248, 0.12);
+  color: #7dd3fc;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+}
