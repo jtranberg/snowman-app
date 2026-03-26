@@ -116,9 +116,9 @@ export default function Home() {
         <p>
           <strong>Behind the Silence:</strong> How Project Snowman captures carbon and kills engine noise.
         </p>
-        <Link to="/blog/behind-the-silence">
+        {/* <Link to="/blog/behind-the-silence">
           <button>📖 Read the Article</button>
-        </Link>
+        </Link> */}
       </div>
 
       <p className="quote">“The air you breathe is cleaner — and quieter — because you showed up.”</p>

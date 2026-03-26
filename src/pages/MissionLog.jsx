@@ -85,8 +85,9 @@ export default function MissionLog() {
         <div className="top-secret-msg">
           <h2>🕶️ Access Restricted</h2>
           <p>
-            This mission log is <strong>classified</strong>. Commander-level
-            authorization required.
+            Posting to this mission log is <strong>PERMISSION ONLY </strong>. Commander-level authorization required.
+            <br></br>Please read all about the project and the journey.
+            
           </p>
           <input
             type="password"
