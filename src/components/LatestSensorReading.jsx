@@ -3,6 +3,30 @@ import "./LatestSensorReading.css";
 
 const API = import.meta.env.VITE_API_URL || "";
 
+const STORAGE_KEYS = {
+  reading: "snowman_latest_reading",
+  env: "snowman_latest_env",
+  runtime: "snowman_latest_runtime",
+  auto: "snowman_latest_auto",
+};
+
+function loadStored(key, fallback = null) {
+  try {
+    const raw = sessionStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function saveStored(key, value) {
+  try {
+    sessionStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // ignore storage errors
+  }
+}
+
 // format numbers or show dash
 function fmt(v, d = 2) {
   if (v == null || Number.isNaN(Number(v))) return "—";
@@ -66,13 +90,17 @@ async function fetchJson(url, init) {
 }
 
 export default function LatestSensorReading() {
-  const [reading, setReading] = useState(null);
-  const [env, setEnv] = useState(null); // {co2ppm, scdTemp, scdRH, timestamp}
+  const [reading, setReading] = useState(() =>
+    loadStored(STORAGE_KEYS.reading, null)
+  );
+  const [env, setEnv] = useState(() => loadStored(STORAGE_KEYS.env, null)); // {co2ppm, scdTemp, scdRH, timestamp}
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [auto, setAuto] = useState(false);
+  const [auto, setAuto] = useState(() => loadStored(STORAGE_KEYS.auto, false));
   // runtime: { totalOnMs, lastState, lastTs } from server
-  const [runtime, setRuntime] = useState(null);
+  const [runtime, setRuntime] = useState(() =>
+    loadStored(STORAGE_KEYS.runtime, null)
+  );
 
   // 10s ticker for age/runtime UI
   const [nowMs, setNowMs] = useState(Date.now());
@@ -82,6 +110,22 @@ export default function LatestSensorReading() {
     const id = setInterval(() => setNowMs(Date.now()), 10_000);
     return () => clearInterval(id);
   }, []);
+
+  useEffect(() => {
+    saveStored(STORAGE_KEYS.reading, reading);
+  }, [reading]);
+
+  useEffect(() => {
+    saveStored(STORAGE_KEYS.env, env);
+  }, [env]);
+
+  useEffect(() => {
+    saveStored(STORAGE_KEYS.runtime, runtime);
+  }, [runtime]);
+
+  useEffect(() => {
+    saveStored(STORAGE_KEYS.auto, auto);
+  }, [auto]);
 
   const ageSec = useMemo(() => {
     if (!reading?.timestamp) return null;
@@ -233,6 +277,14 @@ export default function LatestSensorReading() {
     }
   };
 
+  // Initial load only if no cached data exists
+  useEffect(() => {
+    if (!reading && !env && !runtime) {
+      fetchOnce();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Optional auto-refresh every 10s
   useEffect(() => {
     if (!auto) {
@@ -289,7 +341,7 @@ export default function LatestSensorReading() {
 
       {errorMsg && <p className="error-text">⚠️ {errorMsg}</p>}
 
-      {/* --- Env row (CO2 big, Temp/RH badges) --- */}
+      {/* --- Env row (CO₂ big, Temp/RH badges) --- */}
       <div className="cards-container">
         <div className="sensor-card co2-card">
           <h3>CO₂</h3>
