@@ -3,40 +3,90 @@
   max-width: 700px;
   margin: 0 auto;
   color: #e2e8f0;
+  position: relative;
 }
 
 .log-form {
   margin-bottom: 2rem;
   display: flex;
   flex-direction: column;
+  padding: 1.5rem;
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.07), transparent 35%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(10, 22, 40, 0.98));
+
+  border: 1px solid rgba(125, 211, 252, 0.14);
+
+  box-shadow:
+    0 0 20px rgba(56, 189, 248, 0.12),
+    inset 0 0 18px rgba(56, 189, 248, 0.04);
+}
+
+.log-form::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+.log-form > * {
+  position: relative;
+  z-index: 1;
 }
 
 .log-form textarea {
   padding: 1rem;
   font-size: 1rem;
-  border-radius: 8px;
-  border: none;
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.22);
   resize: vertical;
   min-height: 120px;
   margin-bottom: 1rem;
-  background-image: url(../logo.png);
-  background-size: 120px;
-   background-repeat: no-repeat;
-   background-position: center center;
-   
-    color: #0f172a;
-  opacity: 0.95;
+  background:
+    linear-gradient(rgba(15, 23, 42, 0.88), rgba(15, 23, 42, 0.88)),
+    url(../logo.png);
+  background-size: cover, 120px;
+  background-repeat: no-repeat;
+  background-position: center center;
+  color: #f8fafc;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.log-form textarea::placeholder {
+  color: rgba(203, 213, 225, 0.45);
+}
+
+.log-form textarea:focus {
+  border-color: rgba(56, 189, 248, 0.5);
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.12);
 }
 
 .log-form button {
   align-self: flex-end;
-  padding: 0.6rem 1.5rem;
-  background: #0ea5e9;
-  color: white;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #082032;
   border: none;
-  border-radius: 8px;
-  font-weight: bold;
+  border-radius: 12px;
+  font-weight: 800;
   cursor: pointer;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.24);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.log-form button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.32);
 }
 
 .log-entries {
@@ -46,56 +96,110 @@
 }
 
 .log-entry {
-  background-color: #1e293b;
   padding: 1rem 1.2rem;
   border-left: 4px solid #38bdf8;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.05), transparent 35%),
+    linear-gradient(180deg, rgba(30, 41, 59, 0.96), rgba(15, 23, 42, 0.98));
+
+  border: 1px solid rgba(125, 211, 252, 0.1);
+
+  box-shadow:
+    0 0 12px rgba(56, 189, 248, 0.08),
+    inset 0 0 10px rgba(56, 189, 248, 0.03);
+}
+
+.log-entry::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.08;
+  pointer-events: none;
+}
+
+.log-entry > * {
+  position: relative;
+  z-index: 1;
 }
 
 .log-header {
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   color: #94a3b8;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.6rem;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
+
+.log-entry p {
+  color: #e2e8f0;
+  line-height: 1.65;
+  margin: 0;
+}
+
 .log-image {
   max-width: 100%;
   height: auto;
-  margin-top: 0.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  margin-top: 0.75rem;
+  border-radius: 12px;
+  box-shadow:
+    0 2px 12px rgba(0, 0, 0, 0.25),
+    0 0 10px rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(125, 211, 252, 0.12);
 }
 
 .top-secret-msg input[type="password"] {
   margin-top: 1rem;
-  padding: 0.5rem;
+  padding: 0.75rem 0.9rem;
   font-size: 1rem;
-  border-radius: 6px;
-  border: 1px solid #f87171;
-  background: #fff;
-  color: #0f172a;
+  border-radius: 12px;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  background: rgba(15, 23, 42, 0.88);
+  color: #f8fafc;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.top-secret-msg input[type="password"]:focus {
+  border-color: rgba(248, 113, 113, 0.55);
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.12);
 }
 
 .top-secret-msg button {
   margin-top: 0.75rem;
-  padding: 0.5rem 1rem;
-  background-color: #f87171;
+  padding: 0.65rem 1rem;
+  background: linear-gradient(135deg, #f87171, #ef4444);
   color: #fff;
-  font-weight: bold;
+  font-weight: 800;
   border: none;
-  border-radius: 6px;
+  border-radius: 10px;
   cursor: pointer;
+  box-shadow: 0 0 14px rgba(248, 113, 113, 0.18);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.top-secret-msg button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 18px rgba(248, 113, 113, 0.26);
 }
 
 .access-denied {
   margin-top: 1rem;
-  color: #f87171;
+  color: #fecaca;
   font-weight: bold;
   font-family: 'Courier New', Courier, monospace;
-  background: rgba(255, 0, 0, 0.05);
-  padding: 0.75rem;
-  border: 1px dashed #f87171;
-  border-radius: 6px;
+  background: rgba(127, 29, 29, 0.24);
+  padding: 0.85rem;
+  border: 1px dashed rgba(248, 113, 113, 0.6);
+  border-radius: 10px;
   animation: shake 0.3s ease-in-out;
   text-shadow: 1px 1px #000;
 }

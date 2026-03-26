@@ -302,7 +302,7 @@ export default function LatestSensorReading() {
 
   return (
     <div className="simulation-panel">
-      <h2>Sensor Readings </h2>
+      <h2>Latest Sensor Readings </h2>
 
       <div
         className="toolbar"
@@ -329,14 +329,11 @@ export default function LatestSensorReading() {
           />
           Auto refresh
         </label>
-        <span style={{ fontSize: ".85rem", opacity: 0.8 }}>
-          State: <strong>{derivedState}</strong>
-          {" • "}
-          Last update:{" "}
-          <strong>{ageSec == null ? "—" : `${ageSec}s ago`}</strong>
-          {" • "}
-          On-time: <strong>{runtimeDisplay}</strong>
-        </span>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+  <span className="badge">State {derivedState}</span>
+  <span className="badge">Updated {ageSec == null ? "—" : `${ageSec}s ago`}</span>
+  <span className="badge">On-Time {runtimeDisplay}</span>
+</div>
       </div>
 
       {errorMsg && <p className="error-text">⚠️ {errorMsg}</p>}

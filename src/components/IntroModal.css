@@ -1,47 +1,83 @@
 .intro-modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  height: 100%;
-  width: 100%;
+  inset: 0;
   background: rgba(15, 23, 42, 0.9);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 9998;
+  backdrop-filter: blur(8px);
 }
 
 .intro-modal {
-  background: #f1f5f9;
+  width: min(600px, 90%);
   padding: 2rem;
-  border-radius: 1rem;
+  border-radius: 20px;
   text-align: center;
-  max-width: 600px;
-  width: 90%;
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+  color: #e2e8f0;
+
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), transparent 35%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(10, 22, 40, 0.98));
+
+  border: 1px solid rgba(125, 211, 252, 0.16);
+
+  box-shadow:
+    0 0 24px rgba(56, 189, 248, 0.16),
+    inset 0 0 18px rgba(56, 189, 248, 0.04);
+}
+
+.intro-modal::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.14;
+  pointer-events: none;
+}
+
+.intro-modal > * {
+  position: relative;
+  z-index: 1;
+}
+
+.intro-modal h2 {
+  margin: 0 0 1rem 0;
+  color: #7dd3fc;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.25);
+}
+
+.intro-modal p {
+  color: #cbd5e1;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  font-size: 0.96rem;
 }
 
 .intro-modal button {
   margin-top: 1.5rem;
-  padding: 0.6rem 1.5rem;
-  font-size: 1rem;
-  background-color: #0ea5e9;
-  color: white;
+  padding: 0.85rem 1.6rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #082032;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.24);
 }
 
-.intro-modal p {
-  color: #334155;
-  margin-bottom: 1rem;
-  line-height: 1.5;
+.intro-modal button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.32);
 }
-
-.intro-modal h2 {
-  margin-bottom: 1rem;
-  color: #58c1f1;
-  
-  outline: 1px solid #333;
-  border-radius: 8px;
-} 

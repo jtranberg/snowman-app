@@ -2,24 +2,36 @@
   text-align: center !important;
   padding: 3rem 1rem !important;
   position: relative !important;
+  color: #e2e8f0 !important;
 }
+
 .quote {
-  font-size: 2rem !important;
+  font-size: 1.7rem !important;
   color: #94a3b8 !important;
-  margin: 2rem auto !important;
+  margin: 2.5rem auto 0 auto !important;
   max-width: 800px !important;
+  line-height: 1.5 !important;
+  font-style: italic !important;
 }
 
 .hero-title {
-  font-size: 2.5rem !important;
+  font-size: 2.7rem !important;
   color: #facc15 !important;
-  margin-bottom: 0.5rem !important;
+  margin-bottom: 0.6rem !important;
+  font-family: 'Orbitron', sans-serif !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.06em !important;
+  text-shadow: 0 0 10px rgba(250, 204, 21, 0.18) !important;
 }
 
 .hero-subtext {
-  font-size: 1.1rem !important;
+  font-size: 1.05rem !important;
   color: #cbd5e1 !important;
   margin-bottom: 2rem !important;
+  max-width: 760px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  line-height: 1.6 !important;
 }
 
 .label {
@@ -42,23 +54,25 @@
   margin: 0.5rem !important;
 }
 
-.quote {
-  margin-top: 3rem !important;
-  font-style: italic !important;
-  color: #94a3b8 !important;
-}
-
 body::before {
   content: "" !important;
   position: fixed !important;
-  top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
+  inset: 0 !important;
   background-image: url("https://www.transparenttextures.com/patterns/snow.png") !important;
-  opacity: 0.05 !important;
-  z-index: -1 !important;
+  opacity: 0.045 !important;
+  z-index: -2 !important;
   animation: drift 60s linear infinite !important;
+}
+
+body::after {
+  content: "" !important;
+  position: fixed !important;
+  inset: 0 !important;
+  background:
+    radial-gradient(circle at top center, rgba(56, 189, 248, 0.08), transparent 35%),
+    radial-gradient(circle at bottom center, rgba(59, 130, 246, 0.04), transparent 40%) !important;
+  z-index: -3 !important;
+  pointer-events: none !important;
 }
 
 @keyframes drift {
@@ -80,7 +94,10 @@ body::before {
 .home-logo img {
   height: 120px !important;
   width: auto !important;
-  border-radius: 9px !important;
+  border-radius: 10px !important;
+  box-shadow:
+    0 0 16px rgba(56, 189, 248, 0.14),
+    0 0 0 1px rgba(125, 211, 252, 0.1) !important;
 }
 
 @media (max-width: 600px) {
@@ -92,6 +109,10 @@ body::before {
     font-size: 1.8rem !important;
     margin-top: 100px !important;
   }
+
+  .quote {
+    font-size: 1.2rem !important;
+  }
 }
 
 .mini-stats {
@@ -99,73 +120,113 @@ body::before {
   flex-wrap: wrap !important;
   justify-content: center !important;
   gap: 2rem !important;
-
   margin: 2rem 0 !important;
 }
 
 .stat-card {
   width: 160px !important;
   height: 160px !important;
-  background: radial-gradient(
-    circle at center,
-    #1e293b 40%,
-    #0f172a 100%
-  ) !important;
+  background:
+    radial-gradient(circle at center, rgba(56, 189, 248, 0.1), transparent 26%),
+    radial-gradient(circle at center, #1e293b 40%, #0f172a 100%) !important;
   border-radius: 50% !important;
-  padding: .5rem !important;
-  box-shadow: inset 0 0 12px rgba(56, 189, 248, 0.3), 0 0 8px rgba(0, 0, 0, 0.6) !important;
-  border: 2px solid #334155 !important;
+  padding: 0.5rem !important;
+  box-shadow:
+    inset 0 0 12px rgba(56, 189, 248, 0.22),
+    0 0 10px rgba(0, 0, 0, 0.45),
+    0 0 14px rgba(56, 189, 248, 0.08) !important;
+  border: 2px solid rgba(51, 65, 85, 0.95) !important;
   text-align: center !important;
-  transition: transform 0.3s ease !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: center !important;
   align-items: center !important;
   font-family: "Digital-7 Mono", monospace !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.stat-card::after {
+  content: "" !important;
+  position: absolute !important;
+  inset: 16% !important;
+  border-radius: 50% !important;
+  border: 1px solid rgba(125, 211, 252, 0.08) !important;
+  pointer-events: none !important;
 }
 
 .stat-card:hover {
   transform: scale(1.05) !important;
+  box-shadow:
+    inset 0 0 15px rgba(56, 189, 248, 0.28),
+    0 0 16px rgba(56, 189, 248, 0.16),
+    0 0 10px rgba(0, 0, 0, 0.48) !important;
 }
 
 .stat-card .label {
   font-size: 0.7rem !important;
   color: #7dd3fc !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
+  letter-spacing: 0.08em !important;
   font-weight: 600 !important;
   margin-top: 0.5rem !important;
+  font-family: 'Orbitron', sans-serif !important;
 }
 
 .stat-card .value {
   font-size: 1.6rem !important;
   font-weight: bold !important;
   color: #38bdf8 !important;
-  text-shadow: 0 0 5px rgba(56, 189, 248, 0.4) !important;
+  text-shadow: 0 0 6px rgba(56, 189, 248, 0.4) !important;
   margin-bottom: 0.25rem !important;
 }
-/* 🔔 Breakthrough Banner */
+
+/* Breakthrough Banner */
 .announcement-banner {
-  background: linear-gradient(90deg, #38bdf8, #4ade80);
-  color: #0f172a;
-  padding: 1rem;
-  font-weight: bold;
-  font-size: 1.1rem;
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at left, rgba(74, 222, 128, 0.12), transparent 35%),
+    radial-gradient(circle at right, rgba(56, 189, 248, 0.12), transparent 35%),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.96), rgba(30, 41, 59, 0.96));
+  color: #e0f2fe;
+  padding: 1rem 1.2rem;
+  font-weight: 700;
+  font-size: 1rem;
   text-align: center;
   animation: banner-slide 1.2s ease-out forwards;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-  border-bottom: 2px solid #facc15;
+  box-shadow:
+    0 0 18px rgba(56, 189, 248, 0.14),
+    inset 0 0 10px rgba(56, 189, 248, 0.05);
+  border: 1px solid rgba(125, 211, 252, 0.16);
+  border-radius: 16px;
+  margin-bottom: 1.25rem;
+}
+
+.announcement-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.1;
+  pointer-events: none;
 }
 
 .shout-label {
   font-weight: 900;
   margin-right: 0.5rem;
   color: #facc15;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.04em;
 }
 
 @keyframes banner-slide {
   from {
-    transform: translateY(-100%);
+    transform: translateY(-40%);
     opacity: 0;
   }
   to {
@@ -174,43 +235,80 @@ body::before {
   }
 }
 
-/* 💬 What's New Modal */
+/* What's New Modal */
 .whatsnew-modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(15, 23, 42, 0.85);
+  inset: 0;
+  background: rgba(15, 23, 42, 0.88);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 999;
+  backdrop-filter: blur(8px);
 }
 
 .modal-content {
-  background: #f8fafc;
-  color: #0f172a;
+  width: min(420px, 90%);
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.08), transparent 35%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.98), rgba(10, 22, 40, 0.98));
+  color: #e2e8f0;
   padding: 2rem;
-  border-radius: 10px;
+  border-radius: 18px;
   text-align: center;
-  max-width: 400px;
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 0 20px rgba(56, 189, 248, 0.16),
+    inset 0 0 14px rgba(56, 189, 248, 0.04);
+  border: 1px solid rgba(125, 211, 252, 0.14);
+}
+
+.modal-content::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+.modal-content > * {
+  position: relative;
+  z-index: 1;
 }
 
 .modal-content h2 {
   margin-bottom: 1rem;
-  color: #22d3ee;
+  color: #38bdf8;
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 8px rgba(56, 189, 248, 0.22);
+}
+
+.modal-content p {
+  color: #cbd5e1;
+  line-height: 1.6;
 }
 
 .modal-content button {
   margin-top: 1rem;
-  padding: 0.5rem 1.2rem;
-  background-color: #38bdf8;
-  color: #fff;
+  padding: 0.75rem 1.2rem;
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #082032;
   border: none;
-  border-radius: 6px;
-  font-weight: bold;
+  border-radius: 10px;
+  font-weight: 800;
   cursor: pointer;
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.24);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.modal-content button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.32);
+}

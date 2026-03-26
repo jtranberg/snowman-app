@@ -1,28 +1,52 @@
 .score-panel {
-  background: radial-gradient(circle at top left, rgba(14, 165, 233, 0.05), rgba(255, 255, 255, 0.03)) !important;
-  border: 1px solid rgba(148, 163, 184, 0.1) !important;
+  background: radial-gradient(
+    circle at top left,
+    rgba(14, 165, 233, 0.06),
+    rgba(255, 255, 255, 0.025)
+  ) !important;
+  border: 1px solid rgba(148, 163, 184, 0.12) !important;
   border-radius: 20px !important;
   padding: 2rem !important;
   margin: 1rem 0 !important;
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.2) !important;
+  box-shadow:
+    0 0 20px rgba(56, 189, 248, 0.16),
+    inset 0 0 10px rgba(255, 255, 255, 0.02) !important;
   text-align: center !important;
   backdrop-filter: blur(6px) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.score-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 26px 26px;
+  opacity: 0.18;
+  pointer-events: none;
 }
 
 .score-panel h3 {
-  margin-top: .2rem;
+  position: relative;
+  margin-top: 0.2rem;
   margin-bottom: 2rem !important;
   font-size: 1.8rem !important;
   font-family: 'Orbitron', sans-serif !important;
   color: #facc15 !important;
-  text-shadow: 0 0 6px rgba(250, 204, 21, 0.4) !important;
+  text-shadow: 0 0 8px rgba(250, 204, 21, 0.35) !important;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 }
 
 .dash-row {
- display: flex !important;
+  position: relative;
+  display: flex !important;
   flex-wrap: wrap !important;
   justify-content: center !important;
-  gap: 2rem !important;
+  gap: 1.5rem !important;
   margin: 2rem 0 !important;
 }
 
@@ -30,18 +54,28 @@
   width: 140px !important;
   height: 140px !important;
   border-radius: 50% !important;
-  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01)) !important;
-  box-shadow: 0 0 10px rgba(56, 189, 248, 0.4) inset, 0 0 15px rgba(56, 189, 248, 0.2) !important;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.015)
+  ) !important;
+  box-shadow:
+    inset 0 0 12px rgba(56, 189, 248, 0.22),
+    0 0 12px rgba(56, 189, 248, 0.12) !important;
+  border: 1px solid rgba(125, 211, 252, 0.12) !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
   padding: 1rem !important;
-  transition: transform 0.3s ease !important;
+  transition: transform 0.25s ease, box-shadow 0.25s ease !important;
 }
 
 .dash-item:hover {
-  transform: scale(1.03) !important;
+  transform: scale(1.04) !important;
+  box-shadow:
+    inset 0 0 14px rgba(56, 189, 248, 0.3),
+    0 0 18px rgba(56, 189, 248, 0.18) !important;
 }
 
 .dash-label {
@@ -49,7 +83,9 @@
   color: #7dd3fc !important;
   letter-spacing: 0.07em !important;
   text-transform: uppercase !important;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
+  margin-bottom: 0.2rem !important;
+  font-family: 'Orbitron', sans-serif !important;
 }
 
 .dash-value {
@@ -58,14 +94,18 @@
   font-weight: bold !important;
   color: #38bdf8 !important;
   margin: 0.25rem 0 !important;
-  text-shadow: 0 0 5px rgba(56, 189, 248, 0.4) !important;
+  text-shadow: 0 0 6px rgba(56, 189, 248, 0.4) !important;
+  line-height: 1.1;
 }
 
 .dash-desc {
-  font-size: 0.85rem !important;
-  color: #e1cbdd !important;
+  font-size: 0.82rem !important;
+  color: #cbd5e1 !important;
   opacity: 0.8 !important;
+  max-width: 90px;
+  line-height: 1.2;
 }
+
 .animated-number {
   display: inline-block;
   min-width: 1.5ch;
@@ -73,7 +113,41 @@
 }
 
 @keyframes pop-in {
-  0% { transform: scale(0.8); opacity: 0.5; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(0.84);
+    opacity: 0.45;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
+@media (max-width: 768px) {
+  .score-panel {
+    padding: 1.5rem !important;
+  }
+
+  .score-panel h3 {
+    font-size: 1.35rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  .dash-row {
+    gap: 1rem !important;
+    margin: 1.25rem 0 !important;
+  }
+
+  .dash-item {
+    width: 120px !important;
+    height: 120px !important;
+  }
+
+  .dash-value {
+    font-size: 1.5rem !important;
+  }
+
+  .dash-desc {
+    font-size: 0.75rem !important;
+  }
+}

@@ -3,19 +3,29 @@
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
+  color: #e2e8f0;
+  position: relative;
+  z-index: 1;
 }
 
 .logo {
   height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+  padding: 1rem;
+  border-radius: 16px;
+  will-change: transform, filter;
+  transition: transform 0.3s ease, filter 0.3s ease, box-shadow 0.3s ease;
+  box-shadow:
+    0 0 16px rgba(56, 189, 248, 0.1),
+    0 0 0 1px rgba(125, 211, 252, 0.08);
 }
+
 .logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+  transform: scale(1.04);
+  filter: drop-shadow(0 0 1.4em rgba(56, 189, 248, 0.35));
 }
+
 .logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+  filter: drop-shadow(0 0 1.4em rgba(56, 189, 248, 0.35));
 }
 
 @keyframes logo-spin {
@@ -27,6 +37,7 @@
   }
 }
 
+/* Keep only if you still actually use a spinning secondary logo */
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
@@ -34,9 +45,18 @@
 }
 
 .card {
-  padding: 2em;
+  padding: 2rem;
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.06), transparent 35%),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.96), rgba(10, 22, 40, 0.98));
+  border: 1px solid rgba(125, 211, 252, 0.14);
+  box-shadow:
+    0 0 20px rgba(56, 189, 248, 0.12),
+    inset 0 0 18px rgba(56, 189, 248, 0.04);
+  color: #e2e8f0;
 }
 
 .read-the-docs {
-  color: #888;
+  color: #94a3b8;
 }

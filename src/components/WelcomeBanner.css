@@ -1,15 +1,57 @@
 .welcome-banner {
-  background: linear-gradient(90deg, #22d3ee, #38bdf8);
-  color: #0f172a;
-  padding: 1rem 1.5rem;
-  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+
+  background:
+    radial-gradient(circle at left, rgba(56, 189, 248, 0.15), transparent 40%),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
+
+  color: #e0f2fe;
+  padding: 1.1rem 1.5rem;
+  border-radius: 16px;
   margin-bottom: 1.5rem;
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
-  animation: glow 2s ease-in-out infinite alternate;
   text-align: center;
+
+  border: 1px solid rgba(125, 211, 252, 0.2);
+
+  box-shadow:
+    0 0 16px rgba(56, 189, 248, 0.18),
+    inset 0 0 12px rgba(56, 189, 248, 0.05);
+
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 0.04em;
 }
 
-@keyframes glow {
-  from { box-shadow: 0 0 10px #38bdf8; }
-  to { box-shadow: 0 0 20px #7dd3fc; }
+/* subtle grid overlay */
+.welcome-banner::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+/* glow pulse (more subtle, less flashy) */
+.welcome-banner::after {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.15), transparent 60%);
+  animation: banner-pulse 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes banner-pulse {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(1.05);
+  }
 }
