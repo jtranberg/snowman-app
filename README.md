@@ -10,7 +10,7 @@
 
 ## 📸 Preview
 
-![Snowman Dashboard](./assets/snowman-dashboard.png)
+![Snowman Dashboard](./public/snowman-dashboard.png)
 
 > Real-time telemetry dashboard displaying environmental and system data from Project Snowman.
 
