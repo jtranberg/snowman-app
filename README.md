@@ -5,7 +5,8 @@
 ![Backend](https://img.shields.io/badge/Node.js-Express-339933)
 ![Database](https://img.shields.io/badge/MongoDB-data-47A248)
 ![Platform](https://img.shields.io/badge/IoT-Telemetry-blue)
-![Tests](https://img.shields.io/badge/tests-4%20passing-brightgreen)
+![BLE](https://img.shields.io/badge/BLE-WiFi%20Setup-5c6cff)
+![Tests](https://img.shields.io/badge/tests-10%20passing-brightgreen)
 
 ---
 
