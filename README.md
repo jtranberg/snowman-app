@@ -1,124 +1,180 @@
 # ❄️ Project Snowman Companion App
 
-An ecosystem app for managing, monitoring, and gamifying carbon capture with Project Snowman — the modular CO₂ capture unit.
+![Status](https://img.shields.io/badge/status-active-success)
+![Frontend](https://img.shields.io/badge/React-Vite-61dafb)
+![Backend](https://img.shields.io/badge/Node.js-Express-339933)
+![Database](https://img.shields.io/badge/MongoDB-data-47A248)
+![Platform](https://img.shields.io/badge/IoT-Telemetry-blue)
+
+---
+
+## 📸 Preview
+
+![Snowman Dashboard](./assets/snowman-dashboard.png)
+
+> Real-time telemetry dashboard displaying environmental and system data from Project Snowman.
+
+---
+
+## 🧠 Overview
+
+Project Snowman Companion App is a monitoring and engagement platform designed to support a modular environmental system through real-time telemetry, user interaction, and data visualization.
+
+The app provides insight into system performance, tracks environmental impact, and introduces interactive elements to encourage sustained engagement.
+
+> ⚠️ Note: Implementation details are intentionally abstracted.
 
 ---
 
 ## 🚀 Tech Stack
 
-* **Frontend:** React + Vite
-* **Backend:** Node.js / Express (future expansion)
-* **Database:** MongoDB (for user stats, logs)
-* **Deployment:** Netlify (frontend), Render (backend)
+- **Frontend:** React + Vite  
+- **Backend:** Node.js / Express  
+- **Database:** MongoDB  
+- **Deployment:** Netlify (frontend), Render (backend)  
+- **Hardware Interface:** ESP32-based telemetry system  
 
 ---
 
 ## 🔧 Core Features
 
-### 1. System Monitoring & Maintenance
+### 📊 System Monitoring
 
-* **Live Dashboard**
-
-  * CO₂ captured (daily, total)
-  * Cryochamber temperature
-  * Manifold pressure
-  * Filter saturation level
-  * Electrochem cell efficiency
-* **Maintenance Scheduler**
-
-  * Automatic service reminders
-  * Service history logging
-  * QR scan for part replacement
-
-### 2. Carbon Tracking
-
-* **Offset Counter**
-
-  * Daily/monthly/yearly tracking
-  * Comparison to real-world equivalents (cars, flights)
-* **Emission Logging**
-
-  * Input: fuel, mileage, home energy
-  * App calculates offset balance
-
-### 3. Gamification
-
-* **Snowman Score**
-
-  * XP based on carbon capture
-  * User levels and system upgrades
-* **Achievements & Badges**
-
-  * Milestones ("1 Ton Captured", "100 Days Operational")
-* **Leaderboards**
-
-  * Local + global ranking
-
-### 4. Environmental Awareness
-
-* **Air Quality Data**
-
-  * Overlay for user location
-  * Visualize impact
-* **Learning Hub**
-
-  * Lessons on carbon tech and emissions
-* **News Feed**
-
-  * Climate updates, community stories
-
-### 5. Integration & Expansion
-
-* **Future Smart Home Support**
-
-  * Sync with solar, EVs, smart meters
-* **Tokenized CO₂ Offsets**
-
-  * Track and verify offsets on blockchain
-* **Fleet & Map Mode**
-
-  * View multiple unit performance
-  * Coordinate public or business deployments
+- Live telemetry dashboard
+- Multi-sensor data visualization (temperature, environmental metrics, system status)
+- Real-time system feedback and performance indicators
 
 ---
 
-## 🧪 Future Ideas
+### 🌱 Environmental Tracking
 
-* Simulation Mode
-* Tree & credit sponsorship
-* AR/3D system visualizer
+- Environmental impact tracking and visualization
+- Aggregated performance metrics over time
+- Comparative insights for contextual understanding
 
 ---
 
-## 📁 Project Structure (planned)
+### 🎮 Gamification Layer
 
-```
+- Scoring system based on system activity
+- Achievements and milestones
+- Engagement-based progression model
+
+---
+
+### 🌍 Awareness & Insights
+
+- External environmental data integration (planned)
+- Educational content and system context
+- Community and update feeds (planned)
+
+---
+
+### 🔌 Integration & Expansion
+
+- Designed for modular system expansion
+- Future support for connected devices and external systems
+- Scalable architecture for multi-unit environments
+
+---
+
+## 🧪 Future Direction
+
+- Simulation and predictive modeling
+- Visual system representations (AR/3D)
+- Expanded data integrations and analytics
+- Enhanced user interaction systems
+
+---
+
+## 🏗️ Architecture (High-Level)
+
+
+Sensors → ESP32 → Backend API → Dashboard UI
+
+
+- Sensor data is collected and transmitted via embedded hardware
+- Backend processes and exposes telemetry data
+- Frontend visualizes data in real time
+
+---
+
+## 📁 Project Structure
+
+
 /src
-  /components
-    Header.jsx
-    Dashboard.jsx
-    ScorePanel.jsx
-    MaintenancePanel.jsx
-  /pages
-    Home.jsx
-    DashboardPage.jsx
-    LearnPage.jsx
-  /services
-    api.js
-  App.jsx
-  main.jsx
-  index.css
-```
+/components
+/pages
+/services
+App.jsx
+main.jsx
+
 
 ---
 
-## ✅ Next Steps
+## 🧭 Current Status
 
-* [x] Initialize Vite + React project
-* [ ] Scaffold basic routing and layout
-* [ ] Build Dashboard.jsx with placeholder data
-* [ ] Connect to backend API (planned)
+- [x] System rebuild and sensor integration complete  
+- [x] Live telemetry pipeline operational  
+- [x] Dashboard displaying real-time data  
+- [ ] Backend expansion and data persistence enhancements  
+- [ ] Advanced analytics and feature layering  
 
 ---
 
-Together, we’re building the future of personal climate action — one snowflake at a time. ❄️🌍
+## 🎯 Why This Project Matters
+
+This project explores the intersection of:
+- IoT telemetry systems  
+- real-time data visualization  
+- environmental monitoring  
+- user engagement design  
+
+It demonstrates a full-stack approach to building connected systems that bridge hardware and software.
+
+---
+
+## ⚙️ Run Locally
+
+```bash
+npm install
+npm run dev
+🌐 Deployment
+Frontend: Netlify
+Backend: Render
+
+Building connected systems that turn data into insight. ❄️
+
+
+---
+
+# 🔥 What I improved (important for you)
+
+### ✅ Added badges
+- instant credibility
+- tech stack clarity
+- visual polish
+
+### ✅ Added preview section
+- screenshot becomes your **hook**
+
+### ✅ Made it patent-safe
+- removed sensitive internal details
+- kept concepts high-level
+- still sounds sophisticated
+
+### ✅ Elevated language
+- from “app features” → “system + platform”
+- reads like a **product + system design**
+
+### ✅ Added architecture section
+👉 this is HUGE for perception
+
+---
+
+# 🚀 Optional next upgrade (very strong)
+
+Add this under the screenshot:
+
+```md
+> Live system after full rebuild — multi-sensor telemetry including voltage, temperature, and environmental data.
