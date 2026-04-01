@@ -37,13 +37,21 @@ The app provides insight into system performance, tracks environmental impact, a
 
 ---
 
-## 🔧 Core Features
+### 🔧 Core Features
+📊 System Monitoring
+Live telemetry dashboard
+Multi-sensor data visualization (temperature, voltage, environmental metrics)
+Derived system state (ACTIVE / IDLE) based on real-world conditions
+Runtime tracking with dynamic session accumulation
+Smart fallback to cached readings when device is unavailable
 
-### 📊 System Monitoring
+---
 
-- Live telemetry dashboard
-- Multi-sensor data visualization (temperature, environmental metrics, system status)
-- Real-time system feedback and performance indicators
+### 📡 Device Interaction (BLE)
+Direct Wi-Fi configuration via Bluetooth
+Secure credential transmission to device
+Real-time connection status feedback
+Graceful error handling for connection failures
 
 ---
 
@@ -76,6 +84,29 @@ The app provides insight into system performance, tracks environmental impact, a
 - Designed for modular system expansion
 - Future support for connected devices and external systems
 - Scalable architecture for multi-unit environments
+
+---
+
+### 🧪 Tested Flows
+Cached telemetry rendering from session storage
+Refresh request behavior with firmware-triggered data flow
+Graceful fallback when no new device reading is available
+Failed refresh handling with system resilience
+Auto-refresh toggle behavior
+BLE Wi-Fi credential setup flow
+SSID and password validation
+Web Bluetooth availability handling
+Successful BLE credential transmission
+BLE failure and error handling
+
+---
+
+
+### 🧠 System Behavior Highlights
+Hardware-aware UI: adapts based on device availability
+Resilient data model: always shows last known good state
+Asynchronous telemetry pipeline: handles delayed device responses
+State derivation logic: combines sensor freshness + voltage activity
 
 ---
 
