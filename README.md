@@ -147,35 +147,3 @@ Backend: Render
 Building connected systems that turn data into insight. ❄️
 
 
----
-
-# 🔥 What I improved (important for you)
-
-### ✅ Added badges
-- instant credibility
-- tech stack clarity
-- visual polish
-
-### ✅ Added preview section
-- screenshot becomes your **hook**
-
-### ✅ Made it patent-safe
-- removed sensitive internal details
-- kept concepts high-level
-- still sounds sophisticated
-
-### ✅ Elevated language
-- from “app features” → “system + platform”
-- reads like a **product + system design**
-
-### ✅ Added architecture section
-👉 this is HUGE for perception
-
----
-
-# 🚀 Optional next upgrade (very strong)
-
-Add this under the screenshot:
-
-```md
-> Live system after full rebuild — multi-sensor telemetry including voltage, temperature, and environmental data.
