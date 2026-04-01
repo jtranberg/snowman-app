@@ -1,4 +1,4 @@
-# ❄️ Project Snowman Comand App
+# ❄️ Project Snowman Companion App
 
 ![Status](https://img.shields.io/badge/status-active-success)
 ![Frontend](https://img.shields.io/badge/React-Vite-61dafb)
@@ -14,7 +14,7 @@
 
 ![Snowman Dashboard](./public/snowman-dashboard.png)
 
-> Real-time telemetry dashboard displaying environmental and system data from Project Snowman.
+> Real-time IoT telemetry dashboard with BLE device configuration and resilient data handling.
 
 ---
 
@@ -34,11 +34,12 @@ The app provides insight into system performance, tracks environmental impact, a
 - **Backend:** Node.js / Express  
 - **Database:** MongoDB  
 - **Deployment:** Netlify (frontend), Render (backend)  
-- **Hardware Interface:** ESP32-based telemetry system  
+- **Hardware:** ESP32-based telemetry + BLE configuration interface  
 
 ---
 
 ### 🔧 Core Features
+
 📊 System Monitoring
 Live telemetry dashboard
 Multi-sensor data visualization (temperature, voltage, environmental metrics)
@@ -49,6 +50,7 @@ Smart fallback to cached readings when device is unavailable
 ---
 
 ### 📡 Device Interaction (BLE)
+
 Direct Wi-Fi configuration via Bluetooth
 Secure credential transmission to device
 Real-time connection status feedback
@@ -89,6 +91,9 @@ Graceful error handling for connection failures
 ---
 
 ### 🧪 Tested Flows
+
+Frontend test coverage validating real-world device interaction and fallback behavior.
+
 Cached telemetry rendering from session storage
 Refresh request behavior with firmware-triggered data flow
 Graceful fallback when no new device reading is available
@@ -104,6 +109,9 @@ BLE failure and error handling
 
 
 ### 🧠 System Behavior Highlights
+
+- Designed to operate reliably even when the physical device is offline
+
 Hardware-aware UI: adapts based on device availability
 Resilient data model: always shows last known good state
 Asynchronous telemetry pipeline: handles delayed device responses
